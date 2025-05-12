@@ -1,7 +1,7 @@
 services:
   - type: web
-    name: AiM_Technology_Recruitment
+    name: AimTechRec
     env: python
+    buildCommand: ""
+    startCommand: "gunicorn app:app"
     plan: free
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python app.py"
