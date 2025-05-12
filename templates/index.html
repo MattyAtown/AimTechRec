@@ -129,6 +129,30 @@
             font-size: 22px;
             text-transform: uppercase;
             font-weight: bold;
+            position: relative;
+        }
+
+        .about-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #00ffff;
+            color: #111;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid #00ffff;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .about-button:hover {
+            background-color: #111;
+            color: #00ffff;
+            border-color: #ff00ff;
         }
     </style>
 </head>
@@ -154,9 +178,15 @@
             <p>Building the future of tech talent, one connection at a time.</p>
 
             <div class="boxes">
-                <div class="box">Service Catalogue</div>
-                <div class="box">About Us</div>
-                <div class="box">Company Values</div>
+                <div class="box">Service Catalogue
+                    <a href="service-catalogue.html" class="about-button">Click Here</a>
+                </div>
+                <div class="box">About Us
+                    <a href="about.html" class="about-button">Click Here</a>
+                </div>
+                <div class="box">Company Values
+                    <a href="company-values.html" class="about-button">Click Here</a>
+                </div>
             </div>
 
             <div class="mission-container">
