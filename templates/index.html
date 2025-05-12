@@ -4,133 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiM Technology Recruitment</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Ink+Free&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            margin: 0;
-            font-family: 'Orbitron', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .header-container {
-            display: flex;
-            align-items: center;
-            padding: 30px 50px;
-        }
-
-        .logo {
-            width: 160px;
-            margin-right: 30px;
-        }
-
-        .title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 36px;
-    color: #00ffff;
-    text-transform: none;
-    font-weight: 500;
-    letter-spacing: 1px;
-        }
-
-        #quote-banner {
-            background-color: #111;
-            color: #00ffff;
-            font-family: 'Ink Free', cursive;
-            font-size: 26px;
-            font-weight: normal;
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-
-        .cta-buttons {
-            display: flex;
-            justify-content: space-around;
-            margin: 40px auto 20px;
-            width: 80%;
-            max-width: 1200px;
-        }
-
-        .cta-button {
-            flex: 1;
-            background-color: #111;
-            color: #00ffff;
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            padding: 20px;
-            margin: 0 20px;
-            border-radius: 10px;
-            border: 2px solid #00ffff;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .cta-button:hover {
-            background-color: #00ffff;
-            color: #111;
-            border-color: #ff00ff;
-        }
-
-        .cta-button:first-child {
-            margin-left: 0;
-        }
-
-        .cta-button:last-child {
-            margin-right: 0;
-        }
-
-        .intro {
-            margin-top: 40px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .intro h1 {
-            font-size: 44px;
-            color: #ff00ff;
-            margin-bottom: 20px;
-        }
-
-        .intro p {
-            font-size: 24px;
-            color: #00ffff;
-            margin: 10px 0;
-        }
-
-        .boxes {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 30px;
-            margin-top: 40px;
-        }
-
-        .box {
-            width: 300px;
-            height: 150px;
-            border: 2px solid #00ffff;
-            text-align: center;
-            color: #00ffff;
-            padding: 20px;
-            font-size: 22px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Ink+Free&family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-    <div class="header-container">
-        <img src="/static/images/logo.png" alt="AiM Logo" class="logo">
-        <div class="title">AiM Tech Recruitment - Sniping Technologies Elite - Scoping Out Potential for the Future</div>
-    </div>
-</header>
+        <div class="header-container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AiM Logo" class="logo">
+            <div class="title">AiM Tech Recruitment - Sniping Technologies Elite - Scoping Out Potential for the Future</div>
+        </div>
+    </header>
 
     <div id="quote-banner"></div>
 
@@ -148,15 +31,17 @@
             <div class="boxes">
                 <div class="box">Service Catalogue</div>
                 <div class="box">About Us<br>
-    <button class="about-button" onclick="location.href='/about'">Click Here</button>
-</div>
+                    <button class="about-button" onclick="location.href='/about'">Click Here</button>
+                </div>
                 <div class="box">Company Values</div>
             </div>
 
             <div class="mission-container">
-    <img src="/static/images/missionstatement.png" alt="Mission Statement">
-</div>
-          
+                <img src="{{ url_for('static', filename='images/missionstatement.png') }}" alt="Mission Statement">
+            </div>
+        </section>
+    </main>
+
     <script>
         const quotes = [
             "Ego is the anesthesia that deadens the pain of stupidity. — Rick Rigsby",
