@@ -8,7 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Impact&family=Ink+Free&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #000000;
+            background-image: url('/static/images/background.png');
+            background-size: cover;
+            background-position: center;
             color: #ffffff;
             margin: 0;
             font-family: 'Orbitron', sans-serif;
@@ -19,6 +21,7 @@
             display: flex;
             align-items: center;
             padding: 30px 50px;
+            background-color: rgba(0, 0, 0, 0.8);
         }
 
         .logo {
@@ -27,12 +30,12 @@
         }
 
         .title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 36px;
-    color: #00ffff;
-    text-transform: none;
-    font-weight: 500;
-    letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            color: #00ffff;
+            text-transform: none;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
 
         #quote-banner {
@@ -45,6 +48,19 @@
             padding: 20px;
             margin-bottom: 20px;
             letter-spacing: 1px;
+        }
+
+        .mission-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .mission-container img {
+            width: 90%;
+            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px #00ffff;
         }
 
         .cta-buttons {
@@ -75,14 +91,6 @@
             background-color: #00ffff;
             color: #111;
             border-color: #ff00ff;
-        }
-
-        .cta-button:first-child {
-            margin-left: 0;
-        }
-
-        .cta-button:last-child {
-            margin-right: 0;
         }
 
         .intro {
@@ -152,9 +160,11 @@
             </div>
 
             <div class="mission-container">
-    <img src="/static/images/missionstatement.png" alt="Mission Statement">
-</div>
-          
+                <img src="/static/images/missionstatement.png" alt="Mission Statement">
+            </div>
+        </section>
+    </main>
+
     <script>
         const quotes = [
             "Ego is the anesthesia that deadens the pain of stupidity. — Rick Rigsby",
