@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Catalogue - AiM Technology</title>
+    <title>AiM Technology - Service Catalogue</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Impact&family=Ink+Free&display=swap" rel="stylesheet">
     <style>
@@ -30,90 +30,128 @@
         }
 
         .title {
-            font-family: system-ui, sans-serif;
-            font-size: 36px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 42px;
             color: #00ffff;
             text-transform: none;
-            font-weight: 500;
-            letter-spacing: 1px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
         }
 
-        .content-section {
-            padding: 50px 10%;
-            background-color: rgba(0, 0, 0, 0.9);
-            border-radius: 20px;
-            margin: 50px auto;
+        #quote-banner {
+            background-color: #111;
+            color: #00ffff;
+            font-family: 'Ink Free', cursive;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px #ff00ff;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff; }
+            100% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff00ff; }
+        }
+
+        .service-container {
             max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
             box-shadow: 0 0 30px #00ffff;
         }
 
-        .content-section h1 {
-            font-family: 'Ink Free', cursive;
-            font-size: 44px;
-            color: #ff00ff;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .content-section p {
-            font-family: 'Ink Free', cursive;
-            font-size: 24px;
+        .service-header {
+            font-size: 48px;
             color: #00ffff;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 40px auto;
-        }
-
-        .nav-button {
-            background-color: #00ffff;
-            color: #111;
-            padding: 15px 30px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            border: 2px solid #00ffff;
             text-align: center;
-            text-decoration: none;
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px #00ffff;
+        }
+
+        .service-list {
+            list-style: none;
+            padding: 0;
+            font-size: 22px;
+        }
+
+        .service-list li {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #111;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 20px #00ffff;
             transition: all 0.3s ease;
         }
 
-        .nav-button:hover {
-            background-color: #111;
-            color: #00ffff;
+        .service-list li:hover {
+            background-color: #00ffff;
+            color: #111;
             border-color: #ff00ff;
+        }
+
+        .service-title {
+            font-size: 28px;
+            color: #ff00ff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .service-description {
+            font-size: 18px;
+            color: #00ffff;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <header>
-    <div class="header-container">
-        <img src="/static/images/logo.png" alt="AiM Logo" class="logo">
-        <div class="title">Service Catalogue</div>
-    </div>
-</header>
+        <div class="header-container">
+            <img src="/static/images/logo.png" alt="AiM Logo" class="logo">
+            <div class="title">Service Index</div>
+        </div>
+    </header>
 
-    <div class="content-section">
-        <h1>Our Services</h1>
-        <p>At AiM Technology, we provide a full suite of recruitment services designed to connect top tech talent with cutting-edge companies. Our services include:</p>
-        <p>- Permanent and contract recruitment</p>
-        <p>- Executive search and headhunting</p>
-        <p>- Talent mapping and market insights</p>
-        <p>- Project-based hiring solutions</p>
-        <p>- Career coaching and candidate preparation</p>
-        <p>We focus on quality, precision, and personalized support, ensuring every match is the right fit for both candidates and clients.</p>
-    </div>
+    <div id="quote-banner">"Network Security is NOT Cyber Security"</div>
 
-    <div class="nav-buttons">
-        <a href="/" class="nav-button">Back to Home</a>
-        <a href="about.html" class="nav-button">About Us</a>
-        <a href="company-values.html" class="nav-button">Company Values</a>
+    <div class="service-container">
+        <div class="service-header">AiM Technology - Service Catalogue</div>
+        <ul class="service-list">
+            <li>
+                <div class="service-title">Technical Recruitment</div>
+                <div class="service-description">Expert recruitment services for IT, cybersecurity, and defense sectors. Connecting top technical talent with leading employers in the industry.</div>
+            </li>
+            <li>
+                <div class="service-title">Goal Mapping and Performance Coaching</div>
+                <div class="service-description">Personalized goal mapping, career guidance, and performance coaching to help professionals achieve their full potential.</div>
+            </li>
+            <li>
+                <div class="service-title">CV Review and Optimization</div>
+                <div class="service-description">Professional CV analysis and optimization to highlight your strengths and secure interviews with top companies.</div>
+            </li>
+            <li>
+                <div class="service-title">Career Strategy and Development</div>
+                <div class="service-description">Career planning, market analysis, and strategic guidance to ensure long-term success in competitive industries.</div>
+            </li>
+            <li>
+                <div class="service-title">Consulting and Advisory Services</div>
+                <div class="service-description">Advisory services for businesses looking to build, scale, or optimize their technical teams and digital strategies.</div>
+            </li>
+            <li>
+                <div class="service-title">AI and Technology Solutions</div>
+                <div class="service-description">Innovative AI solutions, digital transformation support, and technology consulting for forward-thinking businesses.</div>
+            </li>
+        </ul>
     </div>
 </body>
 </html>
