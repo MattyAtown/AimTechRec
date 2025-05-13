@@ -39,16 +39,26 @@
         }
 
         #quote-banner {
-            background-color: #111;
-            color: #00ffff;
-            font-family: 'Ink Free', cursive;
-            font-size: 26px;
-            font-weight: normal;
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
+    background-color: #111;
+    color: #00ffff;
+    font-family: 'Ink Free', cursive;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+    border-radius: 10px;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 30px #ff00ff;
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff; }
+    100% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff00ff; }
+}
 
         .cta-buttons {
             display: flex;
