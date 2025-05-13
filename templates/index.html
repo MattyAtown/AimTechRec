@@ -50,19 +50,6 @@
             letter-spacing: 1px;
         }
 
-        .mission-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 40px;
-        }
-
-        .mission-container img {
-            width: 90%;
-            max-width: 800px;
-            border-radius: 20px;
-            box-shadow: 0 0 30px #00ffff;
-        }
-
         .cta-buttons {
             display: flex;
             justify-content: space-around;
@@ -167,9 +154,9 @@
     <div id="quote-banner"></div>
 
     <div class="cta-buttons">
-        <div class="cta-button" id="login-signup">Log In / Sign Up</div>
-        <div class="cta-button" id="live-jobs">Live Jobs</div>
-        <div class="cta-button" id="cv-dr">CV DR</div>
+        <div class="cta-button" onclick="window.location.href='{{ url_for('login_signup') }}'">Log In / Sign Up</div>
+        <div class="cta-button" onclick="window.location.href='{{ url_for('live_jobs') }}'">Live Jobs</div>
+        <div class="cta-button" onclick="window.location.href='{{ url_for('cv_dr') }}'">CV DR</div>
     </div>
 
     <main>
@@ -179,13 +166,13 @@
 
             <div class="boxes">
                 <div class="box">Service Catalogue
-                    <a href="services.html" class="about-button">Click Here</a>
+                    <a href="{{ url_for('services') }}" class="about-button">Click Here</a>
                 </div>
                 <div class="box">About Us
-                    <a href="about.html" class="about-button">Click Here</a>
+                    <a href="{{ url_for('about') }}" class="about-button">Click Here</a>
                 </div>
                 <div class="box">Company Values
-                    <a href="values.html" class="about-button">Click Here</a>
+                    <a href="{{ url_for('values') }}" class="about-button">Click Here</a>
                 </div>
             </div>
 
