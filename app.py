@@ -18,5 +18,9 @@ def services():
 def values():
     return render_template("values.html")
 
+@app.route("/static/<path:path>")
+def static_files(path):
+    return app.send_static_file(path)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
