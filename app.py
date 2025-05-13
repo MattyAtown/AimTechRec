@@ -6,6 +6,18 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
+@app.route('/login_signup')
+def login_signup():
+    return render_template('login_signup.html')
+
+@app.route('/live_jobs')
+def live_jobs():
+    return render_template('live_jobs.html')
+
+@app.route('/cv_dr')
+def cv_dr():
+    return render_template('cv_dr.html')
+
 @app.route('/services')
 def services():
     return render_template('services.html')
