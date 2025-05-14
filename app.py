@@ -1,12 +1,18 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'doc', 'docx'}
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 db = SQLAlchemy(app)
 
@@ -15,6 +21,8 @@ class User(db.Model):
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    verified = db.Column(db.Boolean, default=False)
+    cv_filename = db.Column(db.String(200), nullable=True)
 
 @app.route('/')
 def home():
@@ -44,34 +52,30 @@ def live_jobs():
 def cv_dr():
     return render_template('cv_dr.html')
 
-@app.route('/login', methods=['POST'])
-def login():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
-        session['user_id'] = user.id
-        flash('Login successful!', 'success')
-        return redirect(url_for('home'))
-    else:
-        flash('Invalid email or password', 'error')
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        flash('Please log in to access your dashboard.', 'error')
         return redirect(url_for('login_signup'))
+    user = User.query.get(session['user_id'])
+    return render_template('dashboard.html', user=user)
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    name = request.form.get('name')
-    email = request.form.get('email')
-    password = request.form.get('password')
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        flash('Email already registered. Please log in.', 'error')
+@app.route('/upload_cv', methods=['POST'])
+def upload_cv():
+    if 'user_id' not in session:
+        flash('Please log in to upload your CV.', 'error')
         return redirect(url_for('login_signup'))
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-    new_user = User(name=name, email=email, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    flash('Registration successful! Please log in.', 'success')
-    return redirect(url_for('login_signup'))
+    file = request.files.get('cv')
+    if file and file.filename.split('.')[-1].lower() in app.config['ALLOWED_EXTENSIONS']:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        user = User.query.get(session['user_id'])
+        user.cv_filename = filename
+        db.session.commit()
+        flash('CV uploaded successfully!', 'success')
+    else:
+        flash('Invalid file type. Please upload a PDF, DOC, or DOCX.', 'error')
+    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 def logout():
