@@ -1,86 +1,181 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-import os
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiM Technology - Log In / Sign Up</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Ink+Free&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('/static/images/background.png');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            overflow-x: hidden;
+        }
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        .header-container {
+            display: flex;
+            align-items: center;
+            padding: 30px 50px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
 
-db = SQLAlchemy(app)
+        .logo {
+            width: 160px;
+            margin-right: 30px;
+        }
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+        .title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 42px;
+            color: #00ffff;
+            text-transform: none;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+        }
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+        #quote-banner {
+            background-color: #111;
+            color: #00ffff;
+            font-family: 'Ink Free', cursive;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px #ff00ff;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
 
-@app.route('/login_signup')
-def login_signup():
-    return render_template('login_signup.html')
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff; }
+            100% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff00ff; }
+        }
 
-@app.route('/services')
-def services():
-    return render_template('services.html')
+        .flash-messages {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px #00ffff;
+            text-align: center;
+            font-size: 20px;
+            color: #00ffff;
+        }
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+        .login-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px 40px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 0 30px #00ffff;
+            text-align: center;
+        }
 
-@app.route('/values')
-def values():
-    return render_template('values.html')
+        .login-container h2 {
+            font-size: 36px;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ffff;
+        }
 
-@app.route('/live_jobs')
-def live_jobs():
-    return render_template('live_jobs.html')
+        .login-container input[type="text"], .login-container input[type="password"], .login-container input[type="email"] {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            background-color: #111;
+            color: #00ffff;
+            font-size: 18px;
+            outline: none;
+            box-shadow: 0 0 10px #00ffff;
+        }
 
-@app.route('/cv_dr')
-def cv_dr():
-    return render_template('cv_dr.html')
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00ffff;
+            color: #111;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-@app.route('/login', methods=['POST'])
-def login():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
-        session['user_id'] = user.id
-        flash('Login successful!', 'success')
-        return redirect(url_for('home'))
-    else:
-        flash('Invalid email or password', 'error')
-        return redirect(url_for('login_signup'))
+        .login-container button:hover {
+            background-color: #111;
+            color: #00ffff;
+            border: 2px solid #ff00ff;
+        }
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    name = request.form.get('name')
-    email = request.form.get('email')
-    password = request.form.get('password')
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        flash('Email already registered. Please log in.', 'error')
-        return redirect(url_for('login_signup'))
-    hashed_password = generate_password_hash(password, method='sha256')
-    new_user = User(name=name, email=email, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    flash('Registration successful! Please log in.', 'success')
-    return redirect(url_for('login_signup'))
+        .login-container a {
+            color: #ff00ff;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            margin-top: 20px;
+        }
 
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    flash('Logged out successfully.', 'success')
-    return redirect(url_for('home'))
+        .login-container a:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="{{ url_for('home') }}"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
+            <div class="title">Log In / Sign Up</div>
+        </div>
+    </header>
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    with app.app_context():
-        db.create_all()
-    app.run(host="0.0.0.0", port=port, debug=True)
+    <div id="quote-banner">"Where Talent Meets Technology"</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="login-container">
+        <h2>Log In</h2>
+        <form action="/login" method="POST">
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Log In</button>
+        </form>
+        <a href="#">Don't have an account? Sign up</a>
+    </div>
+
+    <div class="login-container">
+        <h2>Sign Up</h2>
+        <form action="/signup" method="POST">
+            <input type="text" name="name" placeholder="Full Name" required>
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <a href="#">Already have an account? Log in</a>
+    </div>
+</body>
+</html>
