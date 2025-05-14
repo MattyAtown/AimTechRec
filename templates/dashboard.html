@@ -40,7 +40,7 @@
         }
 
         .dashboard-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 40px auto;
             padding: 40px;
             background-color: rgba(0, 0, 0, 0.8);
@@ -57,7 +57,7 @@
         }
 
         .dashboard-info {
-            font-size: 20px;
+            font-size: 22px;
             color: #00ffff;
             line-height: 1.8;
             margin-bottom: 20px;
@@ -120,7 +120,7 @@
     </header>
 
     <div class="dashboard-container">
-        <h1 class="dashboard-header">Welcome, {{ user.name }}!</h1>
+        <h1 class="dashboard-header">Welcome Back, {{ user.name }}!</h1>
         <div class="dashboard-info">
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Account Status:</strong> {{ 'Verified' if user.verified else 'Not Verified' }}</p>
