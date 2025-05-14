@@ -66,7 +66,7 @@ def signup():
     if existing_user:
         flash('Email already registered. Please log in.', 'error')
         return redirect(url_for('login_signup'))
-    hashed_password = generate_password_hash(password, method='sha256')
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = User(name=name, email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
