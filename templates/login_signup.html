@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiM Technology - Log In / Sign Up</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Ink+Free&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('/static/images/background.png');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            padding: 30px 50px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .logo {
+            width: 160px;
+            margin-right: 30px;
+        }
+
+        .title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 42px;
+            color: #00ffff;
+            text-transform: none;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+        }
+
+        #quote-banner {
+            background-color: #111;
+            color: #00ffff;
+            font-family: 'Ink Free', cursive;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px #ff00ff;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff; }
+            100% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff00ff; }
+        }
+
+        .login-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px 40px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 0 30px #00ffff;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            font-size: 36px;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ffff;
+        }
+
+        .login-container input[type="text"], .login-container input[type="password"], .login-container input[type="email"] {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            background-color: #111;
+            color: #00ffff;
+            font-size: 18px;
+            outline: none;
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00ffff;
+            color: #111;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-container button:hover {
+            background-color: #111;
+            color: #00ffff;
+            border: 2px solid #ff00ff;
+        }
+
+        .login-container a {
+            color: #ff00ff;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            margin-top: 20px;
+        }
+
+        .login-container a:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="{{ url_for('home') }}"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
+            <div class="title">Log In / Sign Up</div>
+        </div>
+    </header>
+
+    <div id="quote-banner">"Where Talent Meets Technology"</div>
+
+    <div class="login-container">
+        <h2>Log In</h2>
+        <input type="text" placeholder="Username" required>
+        <input type="password" placeholder="Password" required>
+        <button>Log In</button>
+        <a href="#">Don't have an account? Sign up</a>
+    </div>
+
+    <div class="login-container">
+        <h2>Sign Up</h2>
+        <input type="text" placeholder="Full Name" required>
+        <input type="email" placeholder="Email Address" required>
+        <input type="password" placeholder="Password" required>
+        <button>Sign Up</button>
+        <a href="#">Already have an account? Log in</a>
+    </div>
+</body>
+</html>
