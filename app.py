@@ -82,10 +82,7 @@ def cv_dr():
                 "positive": "✅ Clear formatting and structure.",
                 "improvement": "🔧 Add metrics and stronger action verbs for impact."
             }
-            combined_feedback = f"{feedback['positive']}
-
-Suggestions:
-{feedback['improvement']}"
+            combined_feedback = f"{feedback['positive']}\n\nSuggestions:\n{feedback['improvement']}"
             return render_template("cv_dr.html", feedback=combined_feedback, original=content)
 
     return render_template("cv_dr.html")
