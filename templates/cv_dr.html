@@ -8,17 +8,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #000;
-      color: #00ffff;
-      font-family: 'Orbitron', sans-serif;
+      background-image: url('/static/images/background.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #ffffff;
       margin: 0;
-      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
     }
 
-    header {
+    .header-container {
       display: flex;
       align-items: center;
       padding: 30px 50px;
+      background-color: rgba(0, 0, 0, 0.8);
     }
 
     .logo {
@@ -27,30 +32,46 @@
     }
 
     .title {
-      font-size: 28px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 42px;
       color: #00ffff;
-      letter-spacing: 1px;
+      text-transform: none;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
     }
 
-    .quote-banner {
+    #quote-banner {
       background-color: #111;
       color: #00ffff;
       font-family: 'Ink Free', cursive;
-      font-size: 24px;
+      font-size: 28px;
+      font-weight: bold;
       text-align: center;
       padding: 20px;
       margin-bottom: 20px;
-      border-top: 1px solid #00ffff;
-      border-bottom: 1px solid #00ffff;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+      border-radius: 10px;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 30px #ff00ff;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff; }
+      100% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff00ff; }
     }
 
     .cv-container {
       max-width: 1000px;
-      margin: auto;
+      margin: 60px auto;
       padding: 40px;
-      background: #111;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 20px;
       border: 2px dashed #00ffff;
       text-align: center;
+      box-shadow: 0 0 30px #00ffff;
     }
 
     input[type="file"] {
@@ -64,6 +85,7 @@
       background: #222;
       display: inline-block;
       font-size: 20px;
+      color: #00ffff;
     }
 
     .button-group {
@@ -78,7 +100,8 @@
       color: #111;
       border: none;
       cursor: pointer;
-      transition: 0.3s ease;
+      border-radius: 5px;
+      font-weight: bold;
     }
 
     .button-group button:hover {
@@ -93,6 +116,7 @@
       text-align: left;
       white-space: pre-wrap;
       margin-top: 20px;
+      border-radius: 10px;
     }
 
     .options {
@@ -109,11 +133,13 @@
 <body>
 
   <header>
-    <img src="/static/images/logo.png" alt="AiM Logo" class="logo">
-    <div class="title">AiM Tech Recruitment - CV Doctor</div>
+    <div class="header-container">
+      <a href="{{ url_for('home') }}"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
+      <div class="title">CV Doctor - AiM Tech Recruitment</div>
+    </div>
   </header>
 
-  <div class="quote-banner">
+  <div id="quote-banner">
     “You get one shot, to make a good first impression – make it count.”
   </div>
 
@@ -139,12 +165,7 @@
       <h2>✨ Revamped CV</h2>
       <pre>{{ revised }}</pre>
       <div class="button-group">
-        <button onclick="alert('Saved for download')">Download</button>
-        <button onclick="alert('Opening in viewer...')">Open</button>
-        <button onclick="alert('PDF generated')">Create PDF Version</button>
-        <button onclick="alert('Shared with your selected contact')">Share</button>
-        <button onclick="alert('Improvements accepted')">Accept Improvement</button>
-        <form method="POST" action="/revamp_cv" style="display:inline;">
+        <form method="POST" action="/revamp_cv">
           <input type="hidden" name="cv_text" value="{{ original|tojson }}">
           <button type="submit">Try Again</button>
         </form>
