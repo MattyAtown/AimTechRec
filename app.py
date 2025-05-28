@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+]from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -113,6 +113,34 @@ def live_jobs():
     jobs = Job.query.order_by(Job.date_posted.desc()).all()
     recommended = get_recommended_jobs_for_user(session.get('user_id'))
     return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
+
+import openai
+
+@app.route('/revamp_cv', methods=['POST'])
+def revamp_cv():
+    original = request.form.get("cv_text", "")
+    openai.api_key = os.environ.get("OPENAI_API_KEY")
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # or "gpt-3.5-turbo" if preferred
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."
+                },
+                {
+                    "role": "user",
+                    "content": f"Please rewrite and improve this CV:\n\n{original}"
+                }
+            ],
+            max_tokens=1000,
+            temperature=0.7
+        )
+        revamped = response['choices'][0]['message']['content']
+        return render_template("cv_dr.html", revised=revamped, original=original)
+    except Exception as e:
+        return render_template("cv_dr.html", revised=f"Error: {str(e)}", original=original)
 
 if __name__ == '__main__':
     with app.app_context():
