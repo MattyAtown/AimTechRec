@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,6 +7,9 @@ import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 from datetime import datetime
+
+from openai import OpenAI
+import traceback
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -40,7 +44,7 @@ class Job(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
 
 def get_recommended_jobs_for_user(user_id):
-    return Job.query.limit(2).all()  # Dummy logic: return top 2 jobs for now
+    return Job.query.limit(2).all()
 
 @app.route('/')
 def home():
@@ -78,7 +82,10 @@ def cv_dr():
                 "positive": "✅ Clear formatting and structure.",
                 "improvement": "🔧 Add metrics and stronger action verbs for impact."
             }
-            combined_feedback = f"{feedback['positive']}\n\nSuggestions:\n{feedback['improvement']}"
+            combined_feedback = f"{feedback['positive']}
+
+Suggestions:
+{feedback['improvement']}"
             return render_template("cv_dr.html", feedback=combined_feedback, original=content)
 
     return render_template("cv_dr.html")
@@ -131,21 +138,24 @@ def live_jobs():
     recommended = get_recommended_jobs_for_user(session.get('user_id'))
     return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
 
-
-import openai
-from openai import OpenAI
-
 @app.route('/revamp_cv', methods=['POST'])
 def revamp_cv():
     original = request.form.get("cv_text", "")
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    api_key = os.environ.get("OPENAI_API_KEY")
+    print("🔍 OPENAI_API_KEY present:", bool(api_key))
+
+    if not api_key:
+        return render_template("cv_dr.html", revised="❌ OPENAI_API_KEY not set.", original=original)
 
     try:
+        client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
-                {"role": "user", "content": f"Please rewrite and improve this CV:\n\n{original}"}
+                {"role": "user", "content": f"Please rewrite and improve this CV:
+
+{original}"}
             ],
             max_tokens=1000,
             temperature=0.7
@@ -153,7 +163,8 @@ def revamp_cv():
         revamped = response.choices[0].message.content
         return render_template("cv_dr.html", revised=revamped, original=original)
     except Exception as e:
-        return render_template("cv_dr.html", revised=f"Error: {str(e)}", original=original)
+        error_details = traceback.format_exc()
+        return render_template("cv_dr.html", revised=f"❌ Full error:\n{error_details}", original=original)
 
 if __name__ == '__main__':
     with app.app_context():
