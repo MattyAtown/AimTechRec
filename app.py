@@ -150,9 +150,7 @@ def revamp_cv():
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
-                {"role": "user", "content": f"Please rewrite and improve this CV:
-
-{original}"}
+                {"role": "user", "content": f"Please rewrite and improve this CV:\n\n{original}"}
             ],
             max_tokens=1000,
             temperature=0.7
