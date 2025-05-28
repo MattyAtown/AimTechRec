@@ -5,68 +5,162 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CV Doctor – AiM Tech Rec</title>
   <link rel="stylesheet" href="/static/css/styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
+    body {
+      background-color: #000;
+      color: #00ffff;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 30px 50px;
+    }
+
+    .logo {
+      width: 160px;
+      margin-right: 30px;
+    }
+
+    .title {
+      font-size: 28px;
+      color: #00ffff;
+      letter-spacing: 1px;
+    }
+
+    .quote-banner {
+      background-color: #111;
+      color: #00ffff;
+      font-family: 'Ink Free', cursive;
+      font-size: 24px;
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-top: 1px solid #00ffff;
+      border-bottom: 1px solid #00ffff;
+    }
+
     .cv-container {
-      margin: 60px auto;
-      max-width: 800px;
+      max-width: 1000px;
+      margin: auto;
       padding: 40px;
       background: #111;
       border: 2px dashed #00ffff;
       text-align: center;
-      color: #00ffff;
     }
+
     input[type="file"] {
       display: none;
     }
+
     .drop-label {
       cursor: pointer;
       padding: 30px;
       border: 2px dashed #00ffff;
       background: #222;
       display: inline-block;
+      font-size: 20px;
     }
-    button {
-      margin-top: 20px;
-      padding: 10px 30px;
+
+    .button-group {
+      margin-top: 30px;
+    }
+
+    .button-group button {
+      margin: 10px;
+      padding: 12px 24px;
       font-size: 18px;
       background-color: #00ffff;
       color: #111;
       border: none;
       cursor: pointer;
+      transition: 0.3s ease;
     }
+
+    .button-group button:hover {
+      background-color: #ff00ff;
+      color: #fff;
+    }
+
     pre {
       background: #000;
       color: #0f0;
       padding: 20px;
       text-align: left;
       white-space: pre-wrap;
+      margin-top: 20px;
+    }
+
+    .options {
+      margin-top: 40px;
+      color: #00ffff;
+    }
+
+    .options label {
+      margin-right: 20px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
+
+  <header>
+    <img src="/static/images/logo.png" alt="AiM Logo" class="logo">
+    <div class="title">AiM Tech Recruitment - CV Doctor</div>
+  </header>
+
+  <div class="quote-banner">
+    “You get one shot, to make a good first impression – make it count.”
+  </div>
+
   <div class="cv-container">
     <h1>🩺 CV Doctor</h1>
     <p>Drag your CV into the box or click to upload</p>
+
     <form action="/cv_dr" method="POST" enctype="multipart/form-data">
       <label class="drop-label" for="cv_file">Drop or click here</label>
       <input type="file" id="cv_file" name="cv_file" onchange="this.form.submit()"/>
     </form>
 
     {% if feedback %}
-      <h2>Feedback Summary</h2>
+      <h2>🧠 Review Summary</h2>
       <pre>{{ feedback }}</pre>
-      <form method="POST" action="/revamp_cv">
-        <input type="hidden" name="cv_text" value="{{ original|tojson }}">
-        <button type="submit">Yes – Revamp My CV</button>
-      </form>
+      <div class="button-group">
+        <form method="POST" action="/revamp_cv">
+          <input type="hidden" name="cv_text" value="{{ original|tojson }}">
+          <button type="submit">Improve My CV</button>
+        </form>
+      </div>
     {% elif revised %}
-      <h2>Revamped CV</h2>
+      <h2>✨ Revamped CV</h2>
       <pre>{{ revised }}</pre>
-      <form method="POST" action="/revamp_cv">
-        <input type="hidden" name="cv_text" value="{{ original|tojson }}">
-        <button type="submit">Try Again</button>
-      </form>
+      <div class="button-group">
+        <button onclick="alert('Saved for download')">Download</button>
+        <button onclick="alert('Opening in viewer...')">Open</button>
+        <button onclick="alert('PDF generated')">Create PDF Version</button>
+        <button onclick="alert('Shared with your selected contact')">Share</button>
+        <button onclick="alert('Improvements accepted')">Accept Improvement</button>
+        <form method="POST" action="/revamp_cv" style="display:inline;">
+          <input type="hidden" name="cv_text" value="{{ original|tojson }}">
+          <button type="submit">Try Again</button>
+        </form>
+      </div>
     {% endif %}
+
+    <div class="options">
+      <h3>Would you like to match your CV to current live jobs we carefully selected for you?</h3>
+      <button onclick="alert('Matching jobs...')">Yes, Match My CV</button>
+
+      <div style="margin-top: 20px;">
+        <label><input type="checkbox"> Opt in to job alerts</label>
+        <label><input type="checkbox"> Track my interview progress</label>
+      </div>
+    </div>
   </div>
+
 </body>
 </html>
