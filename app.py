@@ -131,7 +131,6 @@ def live_jobs():
     recommended = get_recommended_jobs_for_user(session.get('user_id'))
     return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
 
-import openai
 
 import openai
 from openai import OpenAI
@@ -139,7 +138,7 @@ from openai import OpenAI
 @app.route('/revamp_cv', methods=['POST'])
 def revamp_cv():
     original = request.form.get("cv_text", "")
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     try:
         response = client.chat.completions.create(
