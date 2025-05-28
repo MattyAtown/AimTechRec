@@ -133,28 +133,25 @@ def live_jobs():
 
 import openai
 
+import openai
+from openai import OpenAI
+
 @app.route('/revamp_cv', methods=['POST'])
 def revamp_cv():
     original = request.form.get("cv_text", "")
-    openai.api_key = os.environ.get("OPENAI_API_KEY")
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4",  # or "gpt-3.5-turbo" if preferred
+        response = client.chat.completions.create(
+            model="gpt-4",
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."
-                },
-                {
-                    "role": "user",
-                    "content": f"Please rewrite and improve this CV:\n\n{original}"
-                }
+                {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
+                {"role": "user", "content": f"Please rewrite and improve this CV:\n\n{original}"}
             ],
             max_tokens=1000,
             temperature=0.7
         )
-        revamped = response['choices'][0]['message']['content']
+        revamped = response.choices[0].message.content
         return render_template("cv_dr.html", revised=revamped, original=original)
     except Exception as e:
         return render_template("cv_dr.html", revised=f"Error: {str(e)}", original=original)
