@@ -1,11 +1,11 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
-import secrets
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -22,7 +22,6 @@ app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('EMAIL_USER')
 
 mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.secret_key)
-
 db = SQLAlchemy(app)
 
 class User(db.Model):
@@ -32,6 +31,16 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     verified = db.Column(db.Boolean, default=False)
     cv_filename = db.Column(db.String(200), nullable=True)
+
+class Job(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    location = db.Column(db.String(100))
+    salary = db.Column(db.String(50))
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+
+def get_recommended_jobs_for_user(user_id):
+    return Job.query.limit(2).all()  # Dummy logic: return top 2 jobs for now
 
 @app.route('/')
 def home():
@@ -52,10 +61,6 @@ def about():
 @app.route('/values')
 def values():
     return render_template('values.html')
-
-@app.route('/live_jobs')
-def live_jobs():
-    return render_template('live_jobs.html')
 
 @app.route('/cv_dr')
 def cv_dr():
@@ -102,6 +107,12 @@ def logout():
     session.pop('user_id', None)
     flash('Logged out successfully.', 'success')
     return redirect(url_for('home'))
+
+@app.route('/live_jobs')
+def live_jobs():
+    jobs = Job.query.order_by(Job.date_posted.desc()).all()
+    recommended = get_recommended_jobs_for_user(session.get('user_id'))
+    return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
 
 if __name__ == '__main__':
     with app.app_context():
