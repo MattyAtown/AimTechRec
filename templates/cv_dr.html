@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CV Doctor – AiM Tech Rec</title>
+  <link rel="stylesheet" href="/static/css/styles.css"/>
+  <style>
+    .cv-container {
+      margin: 60px auto;
+      max-width: 800px;
+      padding: 40px;
+      background: #111;
+      border: 2px dashed #00ffff;
+      text-align: center;
+      color: #00ffff;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .drop-label {
+      cursor: pointer;
+      padding: 30px;
+      border: 2px dashed #00ffff;
+      background: #222;
+      display: inline-block;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      background-color: #00ffff;
+      color: #111;
+      border: none;
+      cursor: pointer;
+    }
+    pre {
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="cv-container">
+    <h1>🩺 CV Doctor</h1>
+    <p>Drag your CV into the box or click to upload</p>
+    <form action="/cv_dr" method="POST" enctype="multipart/form-data">
+      <label class="drop-label" for="cv_file">Drop or click here</label>
+      <input type="file" id="cv_file" name="cv_file" onchange="this.form.submit()"/>
+    </form>
+
+    {% if feedback %}
+      <h2>Feedback Summary</h2>
+      <pre>{{ feedback }}</pre>
+      <form method="POST" action="/revamp_cv">
+        <input type="hidden" name="cv_text" value="{{ original|tojson }}">
+        <button type="submit">Yes – Revamp My CV</button>
+      </form>
+    {% elif revised %}
+      <h2>Revamped CV</h2>
+      <pre>{{ revised }}</pre>
+      <form method="POST" action="/revamp_cv">
+        <input type="hidden" name="cv_text" value="{{ original|tojson }}">
+        <button type="submit">Try Again</button>
+      </form>
+    {% endif %}
+  </div>
+</body>
+</html>
