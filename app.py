@@ -6,7 +6,7 @@ import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 from datetime import datetime
-from openai import OpenAI
+import openai
 import traceback  # for showing error tracebacks
 
 app = Flask(__name__)
@@ -142,8 +142,8 @@ def revamp_cv():
         return render_template("cv_dr.html", revised="❌ OPENAI_API_KEY not set.", original=original)
 
     try:
-        client = OpenAI(api_key=api_key)
-        response = client.chat.completions.create(
+        openai.api_key = api_key
+        response = openai.ChatCompletion.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
