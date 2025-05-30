@@ -4,4 +4,5 @@ flask_mail
 werkzeug
 gunicorn
 itsdangerous
-openai
+openai>=1.0.0
+
