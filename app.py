@@ -136,6 +136,7 @@ def live_jobs():
 def revamp_cv():
     original = request.form.get("cv_text", "")
     api_key = os.environ.get("OPENAI_API_KEY")
+    print("✅ Using OpenAI Key:", api_key[:12] + "..." if api_key else "❌ None found")
     print("🔍 OPENAI_API_KEY present:", bool(api_key))
 
     if not api_key:
