@@ -144,7 +144,7 @@ def revamp_cv():
     try:
         client = openai.OpenAI(api_key=api_key)
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
                 {"role": "user", "content": f"Please rewrite and improve this CV:\n\n{original}"}
