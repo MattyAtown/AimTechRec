@@ -144,13 +144,15 @@ def revamp_cv():
     try:
         openai.api_key = api_key
         response = openai.ChatCompletion.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
-                {"role": "user", "content": f"Please rewrite and improve this CV:\n\n{original}"}
-            ],
-            max_tokens=1000,
-            temperature=0.7
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a professional CV rewriting assistant. Enhance this CV for job search success."},
+        {"role": "user", "content": f"Please rewrite and improve this CV:\n\n{original}"}
+    ],
+    max_tokens=1000,
+    temperature=0.7
+    )
+
         )
         revamped = response.choices[0].message.content
         return render_template("cv_dr.html", revised=revamped, original=original)
