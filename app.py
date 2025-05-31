@@ -160,14 +160,48 @@ def revamp_cv():
         return render_template("cv_dr.html", revised=f"❌ Full error:\n{error_details}", original=original)
 from flask import request, jsonify
 
+import requests
+from flask import request, jsonify
+
 @app.route('/api/live_jobs')
 def get_live_jobs():
     title = request.args.get('title', '')
     location = request.args.get('location', '')
-    min_salary = int(request.args.get('minSalary', 0))
-    max_salary = int(request.args.get('maxSalary', 1_000_000))
-    work_type = request.args.get('workType', '')
-    industry = request.args.get('industry', '')
+    min_salary = request.args.get('minSalary', '0')
+    max_salary = request.args.get('maxSalary', '1000000')
+
+    query = f"{title} {location}"
+
+    url = "https://jsearch.p.rapidapi.com/search"
+    headers = {
+        "X-RapidAPI-Key": "aa532f1f40msh291e05859835c93p10f3b6jsn302f1e4467c7",
+        "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
+    }
+    params = {
+        "query": query,
+        "num_pages": "1",
+        "min_salary": min_salary,
+        "max_salary": max_salary
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        results = response.json().get("data", [])
+        
+        jobs = []
+        for job in results:
+            jobs.append({
+                "title": job.get("job_title", "Unknown Role"),
+                "location": job.get("job_city", "Unknown Location"),
+                "salary": job.get("salary", "N/A"),
+                "link": job.get("job_apply_link", "#")
+            })
+
+        return jsonify(jobs)
+    except Exception as e:
+        print("API Error:", e)
+        return jsonify([]), 500
+
 
     import requests
 
@@ -205,26 +239,62 @@ def get_live_jobs():
 
 @app.route('/api/smart_matches')
 def get_smart_matches():
-    # In production: extract user CV keywords, calculate skill match with jobs
-    ai_matches = [
-        {
-            "title": "Cloud Infrastructure Engineer",
-            "location": "Manchester",
-            "salary": "£600/day",
-            "skill_match": 92,
-            "interview_prob": 85,
-            "suitability": 89
-        },
-        {
-            "title": "DevSecOps Lead",
-            "location": "Bristol",
-            "salary": "£720/day",
-            "skill_match": 88,
-            "interview_prob": 80,
-            "suitability": 84
+    if 'user_id' not in session:
+        return jsonify([])
+
+    user = User.query.get(session['user_id'])
+    if not user or not user.cv_filename:
+        return jsonify([])
+
+    # Load and read the user's uploaded CV
+    try:
+        cv_path = os.path.join(app.config['UPLOAD_FOLDER'], user.cv_filename)
+        with open(cv_path, 'r', encoding='utf-8', errors='ignore') as f:
+            cv_text = f.read()
+    except Exception as e:
+        print("CV read error:", e)
+        return jsonify([])
+
+    keywords = [word.lower() for word in cv_text.split() if len(word) > 4][:10]
+    query = ' '.join(keywords[:5])  # limit to 5 keywords to keep query clean
+
+    # Call JSearch API
+    try:
+        url = "https://jsearch.p.rapidapi.com/search"
+        headers = {
+            "X-RapidAPI-Key": os.environ.get("RAPIDAPI_KEY"),
+            "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
         }
-    ]
-    return jsonify(ai_matches)
+        params = {
+            "query": query,
+            "num_pages": "1"
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+        results = response.json().get("data", [])
+
+        def score(job):
+            match_count = sum(1 for word in keywords if word in job.get("job_description", "").lower())
+            return int((match_count / len(keywords)) * 100)
+
+        matches = []
+        for job in results:
+            match_score = score(job)
+            if match_score >= 50:
+                matches.append({
+                    "title": job.get("job_title", "Unknown"),
+                    "location": job.get("job_city", "N/A"),
+                    "salary": job.get("salary", "N/A"),
+                    "skill_match": match_score,
+                    "interview_prob": 70 + (match_score // 5),
+                    "suitability": match_score
+                })
+
+        return jsonify(matches[:5])  # return top 5 smart matches
+    except Exception as e:
+        print("Smart Match Error:", e)
+        return jsonify([])
+
 
 if __name__ == '__main__':
     with app.app_context():
