@@ -171,15 +171,6 @@ def get_live_jobs():
 
     import requests
 
-@app.route('/api/live_jobs')
-def get_live_jobs():
-    title = request.args.get('title', '')
-    location = request.args.get('location', '')
-    min_salary = request.args.get('minSalary', 0)
-    max_salary = request.args.get('maxSalary', 1_000_000)
-    work_type = request.args.get('workType', '')
-    industry = request.args.get('industry', '')
-
     ADZUNA_APP_ID = '9e85cf1e'
     ADZUNA_APP_KEY = '3c67192f4c294e0c5277762f4777f852'
 
