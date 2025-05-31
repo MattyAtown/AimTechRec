@@ -1,102 +1,72 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AiMTechRec | Job Board</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/styles.css">
+    <meta charset="UTF-8">
+    <title>Job Connector</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body>
-  <header>
-    Welcome to AiMTechRec | The Future of Recruitment
-  </header>
-  <div id="quote-banner">
-    "The job you seek might just be seeking you – let AiM show you the way."
-  </div>
-  <div class="container">
-    <!-- Panel 1: Live Listings -->
-    <div class="panel">
-      <h2>Live Job Listings</h2>
-      <div class="filter-bar">
-        <input type="text" id="job-title" placeholder="Job title" />
-        <input type="text" id="location" placeholder="Location" />
-        <input type="number" id="min-salary" placeholder="Min Salary" />
-        <input type="number" id="max-salary" placeholder="Max Salary" />
-        <select id="work-type">
-          <option value="">Work Type</option>
-          <option value="remote">Remote</option>
-          <option value="hybrid">Hybrid</option>
-          <option value="onsite">On-site</option>
-        </select>
-        <select id="industry">
-          <option value="">Industry</option>
-          <option value="tech">Tech</option>
-          <option value="finance">Finance</option>
-          <option value="health">Healthcare</option>
-        </select>
-        <button onclick="fetchLiveJobs()">Search</button>
-      </div>
-      <div id="live-jobs-container">Loading jobs...</div>
-    </div>
+<body style="background-image: url('/static/images/background.png'); background-size: cover;">
+    <header style="display: flex; align-items: center; justify-content: space-between; padding: 20px;">
+        <img src="/static/images/logo.png" alt="Logo" style="height: 60px;">
+        <h1 style="color: white; font-size: 2em;">Job Connector</h1>
+    </header>
 
-    <!-- Panel 2: Smart AI Matches -->
-    <div class="panel">
-      <h2>Jobs You Should Apply For</h2>
-      <div id="smart-matches-container">Analyzing CV data...</div>
-    </div>
-  </div>
+    <section class="filters" style="padding: 20px; color: white;">
+        <h2>Search Jobs</h2>
+        <form id="jobSearchForm">
+            <input type="text" id="title" placeholder="Job Title">
+            <input type="text" id="location" placeholder="Location">
+            <button type="submit">Search</button>
+        </form>
+    </section>
 
-  <script>
-    async function fetchLiveJobs() {
-      const title = document.getElementById('job-title').value;
-      const location = document.getElementById('location').value;
-      const minSalary = document.getElementById('min-salary').value;
-      const maxSalary = document.getElementById('max-salary').value;
-      const workType = document.getElementById('work-type').value;
-      const industry = document.getElementById('industry').value;
-
-      const query = new URLSearchParams({ title, location, minSalary, maxSalary, workType, industry });
-      const res = await fetch(`/api/live_jobs?${query.toString()}`);
-      const jobs = await res.json();
-
-      const container = document.getElementById('live-jobs-container');
-      if (!Array.isArray(jobs) || jobs.length === 0) {
-        container.innerHTML = '<p>No results found. Try adjusting your filters.</p>';
-        return;
-      }
-      container.innerHTML = jobs.map(job => `
-        <div class="job-card">
-          <strong>${job.title}</strong><br/>
-          ${job.location} - ${job.salary}<br/>
-          <a href="${job.link}" target="_blank">View Job</a>
+    <section style="display: flex; gap: 40px; padding: 20px;">
+        <div style="width: 50%; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
+            <h2>Search Results</h2>
+            <div id="jobResults"></div>
         </div>
-      `).join('');
-    }
-
-    async function fetchSmartMatches() {
-      const res = await fetch('/api/smart_matches');
-      const matches = await res.json();
-      const container = document.getElementById('smart-matches-container');
-      if (!Array.isArray(matches) || matches.length === 0) {
-        container.innerHTML = '<p>No tailored matches found. Please upload your CV for smart matching.</p>';
-        return;
-      }
-      container.innerHTML = matches.map(match => `
-        <div class="job-card">
-          <strong>${match.title}</strong><br/>
-          ${match.location} - ${match.salary}
-          <div class="score-box">
-            Skill Match: ${match.skill_match}%<br/>
-            Interview Probability: ${match.interview_prob}%<br/>
-            Suitability Score: ${match.suitability}%
-          </div>
+        <div style="width: 50%; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
+            <h2>Matched for You</h2>
+            <div id="matchedJobs">
+                <!-- Matched jobs can be populated here based on CV logic -->
+            </div>
         </div>
-      `).join('');
-    }
+    </section>
 
-    fetchLiveJobs();
-    fetchSmartMatches();
-  </script>
+    <script>
+        document.getElementById('jobSearchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const location = document.getElementById('location').value;
+
+            fetch(`/api/jobs?title=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('jobResults');
+                    container.innerHTML = '';
+                    if (data.length === 0) {
+                        container.innerHTML = '<p>No jobs found.</p>';
+                    } else {
+                        data.forEach(job => {
+                            const jobCard = document.createElement('div');
+                            jobCard.innerHTML = `
+                                <h3>${job.title}</h3>
+                                <p><strong>Company:</strong> ${job.company}</p>
+                                <p><strong>Location:</strong> ${job.location}</p>
+                                <p>${job.description.slice(0, 200)}...</p>
+                            `;
+                            jobCard.style.borderBottom = '1px solid #ccc';
+                            jobCard.style.paddingBottom = '10px';
+                            jobCard.style.marginBottom = '10px';
+                            container.appendChild(jobCard);
+                        });
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('jobResults').innerHTML = '<p>Error loading jobs.</p>';
+                });
+        });
+    </script>
 </body>
 </html>
