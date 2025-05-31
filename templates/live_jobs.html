@@ -9,26 +9,29 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+      background-color: #000;
+      color: #0ff;
     }
     .container {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       padding: 20px;
+      gap: 20px;
     }
     .panel {
-      flex: 1 1 48%;
-      background-color: #fff;
-      margin-bottom: 20px;
+      flex: 1;
+      background: #111;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 15px #0ff;
       min-height: 600px;
+      overflow-y: auto;
     }
     .panel h2 {
-      font-size: 18px;
-      margin-bottom: 10px;
+      font-size: 22px;
+      color: #0ff;
+      border-bottom: 2px solid #0ff;
+      padding-bottom: 5px;
     }
     .filter-bar {
       display: flex;
@@ -40,20 +43,37 @@
     .filter-bar select {
       padding: 8px;
       font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #0ff;
+      background: #222;
+      color: #0ff;
     }
     .job-card {
-      border-bottom: 1px solid #ccc;
-      padding: 10px 0;
-    }
-    .job-card:last-child {
-      border-bottom: none;
+      border: 1px solid #0ff;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #1a1a1a;
     }
     .score-box {
-      margin: 10px 0;
+      font-size: 12px;
+      color: #fff;
+      margin-top: 5px;
+    }
+    button {
+      background: #0ff;
+      color: #000;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0cc;
     }
     @media (max-width: 768px) {
-      .panel {
-        flex: 1 1 100%;
+      .container {
+        flex-direction: column;
       }
     }
   </style>
@@ -64,61 +84,75 @@
     <div class="panel">
       <h2>Live Job Listings</h2>
       <div class="filter-bar">
-        <input type="text" placeholder="Job title" />
-        <input type="text" placeholder="Location" />
-        <input type="number" placeholder="Min Salary" />
-        <input type="number" placeholder="Max Salary" />
-        <select>
+        <input type="text" id="job-title" placeholder="Job title" />
+        <input type="text" id="location" placeholder="Location" />
+        <input type="number" id="min-salary" placeholder="Min Salary" />
+        <input type="number" id="max-salary" placeholder="Max Salary" />
+        <select id="work-type">
           <option value="">Work Type</option>
           <option value="remote">Remote</option>
           <option value="hybrid">Hybrid</option>
           <option value="onsite">On-site</option>
         </select>
-        <select>
+        <select id="industry">
           <option value="">Industry</option>
           <option value="tech">Tech</option>
           <option value="finance">Finance</option>
           <option value="health">Healthcare</option>
         </select>
+        <button onclick="fetchLiveJobs()">Search</button>
       </div>
-      <div id="live-jobs-container">
-        <div class="job-card">
-          <strong>Software Engineer</strong><br/>
-          London, UK - £65,000
-        </div>
-        <div class="job-card">
-          <strong>Cloud Architect</strong><br/>
-          Remote - £90,000
-        </div>
-        <!-- More job cards will be loaded here dynamically -->
-      </div>
+      <div id="live-jobs-container"></div>
     </div>
 
     <!-- Panel 2: Smart AI Matches -->
     <div class="panel">
       <h2>Jobs You Should Apply For</h2>
-      <div id="smart-matches-container">
-        <div class="job-card">
-          <strong>DevOps Engineer</strong><br/>
-          Manchester, UK - £75,000
-          <div class="score-box">
-            Skill Match: 92%<br/>
-            Interview Probability: 78%<br/>
-            Suitability Score: 88%
-          </div>
-        </div>
-        <div class="job-card">
-          <strong>AI Product Manager</strong><br/>
-          Remote - £100,000
-          <div class="score-box">
-            Skill Match: 85%<br/>
-            Interview Probability: 70%<br/>
-            Suitability Score: 80%
-          </div>
-        </div>
-        <!-- More smart matches added dynamically -->
-      </div>
+      <div id="smart-matches-container"></div>
     </div>
   </div>
+
+  <script>
+    async function fetchLiveJobs() {
+      const title = document.getElementById('job-title').value;
+      const location = document.getElementById('location').value;
+      const minSalary = document.getElementById('min-salary').value;
+      const maxSalary = document.getElementById('max-salary').value;
+      const workType = document.getElementById('work-type').value;
+      const industry = document.getElementById('industry').value;
+
+      const query = new URLSearchParams({ title, location, minSalary, maxSalary, workType, industry });
+      const res = await fetch(`/api/live_jobs?${query.toString()}`);
+      const jobs = await res.json();
+
+      const container = document.getElementById('live-jobs-container');
+      container.innerHTML = jobs.map(job => `
+        <div class="job-card">
+          <strong>${job.title}</strong><br/>
+          ${job.location} - ${job.salary}
+        </div>
+      `).join('');
+    }
+
+    async function fetchSmartMatches() {
+      const res = await fetch('/api/smart_matches');
+      const matches = await res.json();
+      const container = document.getElementById('smart-matches-container');
+      container.innerHTML = matches.map(match => `
+        <div class="job-card">
+          <strong>${match.title}</strong><br/>
+          ${match.location} - ${match.salary}
+          <div class="score-box">
+            Skill Match: ${match.skill_match}%<br/>
+            Interview Probability: ${match.interview_prob}%<br/>
+            Suitability Score: ${match.suitability}%
+          </div>
+        </div>
+      `).join('');
+    }
+
+    fetchLiveJobs();
+    fetchSmartMatches();
+  </script>
 </body>
 </html>
