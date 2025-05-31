@@ -6,3 +6,4 @@ gunicorn
 itsdangerous
 openai>=1.0.0
 apscheduler
+requests
