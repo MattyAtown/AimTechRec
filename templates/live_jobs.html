@@ -6,67 +6,66 @@
     <title>Job Connector</title>
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body style="background-image: url('/static/images/background.png'); background-size: cover;">
-    <header style="display: flex; align-items: center; justify-content: space-between; padding: 20px;">
-        <img src="/static/images/logo.png" alt="Logo" style="height: 60px;">
-        <h1 style="color: white; font-size: 2em;">Job Connector</h1>
-    </header>
-
-    <section class="filters" style="padding: 20px; color: white;">
-        <h2>Search Jobs</h2>
+<body style="background-image: url('/static/images/background.png'); background-size: cover; color: #00fff7; font-family: 'Orbitron', sans-serif;">
+    <div class="banner">
+        <img src="/static/images/logo.png" alt="Logo" class="logo">
+        <h1 class="banner-text">Job Boards are Boring - AiM hit the mark</h1>
+    </div>
+    <div class="filters neon-box">
+        <h2>Filter Your Search</h2>
         <form id="jobSearchForm">
-            <input type="text" id="title" placeholder="Job Title">
-            <input type="text" id="location" placeholder="Location">
+            <label>Location:</label>
+            <select name="location">
+                <option value="">-- Select a City --</option>
+                <option value="London">London</option>
+                <option value="Manchester">Manchester</option>
+                <option value="Birmingham">Birmingham</option>
+                <option value="Leeds">Leeds</option>
+                <option value="Glasgow">Glasgow</option>
+            </select>
+            <label>Radius:</label>
+            <select name="radius">
+                <option value="10">10 miles</option>
+                <option value="20">20 miles</option>
+            </select>
+            <label>Company Size:</label>
+            <select name="company_size">
+                <option value="">-- Select Size --</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+            </select>
+            <label>Working Culture:</label>
+            <select name="culture">
+                <option value="">-- Select --</option>
+                <option value="Remote">Remote</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Onsite">Office/Site</option>
+            </select>
+            <label>Industry:</label>
+            <select name="industry">
+                <option value="">-- Select Industry --</option>
+                <option value="IT">IT</option>
+                <option value="Retail">Retail</option>
+                <option value="Industrial">Industrial</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Science">Science</option>
+            </select>
+            <label>Salary Sought:</label>
+            <input type="number" name="minSalary" placeholder="Minimum Salary (£)">
             <button type="submit">Search</button>
         </form>
-    </section>
-
-    <section style="display: flex; gap: 40px; padding: 20px;">
-        <div style="width: 50%; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
+    </div>
+    <div class="results-container">
+        <div class="neon-box" id="search-results">
             <h2>Search Results</h2>
             <div id="jobResults"></div>
         </div>
-        <div style="width: 50%; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
-            <h2>Matched for You</h2>
-            <div id="matchedJobs">
-                <!-- Matched jobs can be populated here based on CV logic -->
-            </div>
+        <div class="neon-box" id="matched-results">
+            <h2>Matched For You</h2>
+            <div id="smartMatches"></div>
         </div>
-    </section>
-
-    <script>
-        document.getElementById('jobSearchForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const title = document.getElementById('title').value;
-            const location = document.getElementById('location').value;
-
-            fetch(`/api/jobs?title=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}`)
-                .then(res => res.json())
-                .then(data => {
-                    const container = document.getElementById('jobResults');
-                    container.innerHTML = '';
-                    if (data.length === 0) {
-                        container.innerHTML = '<p>No jobs found.</p>';
-                    } else {
-                        data.forEach(job => {
-                            const jobCard = document.createElement('div');
-                            jobCard.innerHTML = `
-                                <h3>${job.title}</h3>
-                                <p><strong>Company:</strong> ${job.company}</p>
-                                <p><strong>Location:</strong> ${job.location}</p>
-                                <p>${job.description.slice(0, 200)}...</p>
-                            `;
-                            jobCard.style.borderBottom = '1px solid #ccc';
-                            jobCard.style.paddingBottom = '10px';
-                            jobCard.style.marginBottom = '10px';
-                            container.appendChild(jobCard);
-                        });
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('jobResults').innerHTML = '<p>Error loading jobs.</p>';
-                });
-        });
-    </script>
+    </div>
+    <script src="/static/js/scripts.js"></script>
 </body>
 </html>
