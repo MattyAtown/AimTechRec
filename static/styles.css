@@ -1,0 +1,98 @@
+body {
+    background-image: url('/static/images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #ffffff;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    overflow-x: hidden;
+}
+
+.title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 42px;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+}
+
+#quote-banner {
+    background-color: #111;
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+    transition: all 0.3s ease;
+}
+
+.mission-container {
+    display: block;
+    margin: 40px auto;
+    width: 80%;
+    max-width: 800px;
+    background-color: rgba(0, 0, 0, 0.6);  /* Translucent black */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    backdrop-filter: blur(10px);  /* Adds a frosted glass effect */
+}
+
+.mission-container img {
+    width: 100%;
+    border-radius: 10px;
+}
+.about-container {
+    background-image: url('/static/images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #ffffff;
+    margin: 0;
+    padding: 50px;
+    font-family: 'Ink Free', cursive;
+    text-align: center;
+    max-width: 80%;
+    margin: 100px auto;
+    border-radius: 20px;
+    box-shadow: 0 0 30px #00ffff;
+}
+
+.about-container h1 {
+    font-size: 48px;
+    color: #00ffff;
+    margin-bottom: 20px;
+}
+
+.about-container p {
+    font-size: 22px;
+    color: #ffffff;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.close-button {
+    background-color: #00ffff;
+    color: #000000;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+}
+
+.close-button:hover {
+    background-color: #ff00ff;
+    color: #ffffff;
+}
