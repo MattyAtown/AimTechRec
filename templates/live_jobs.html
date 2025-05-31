@@ -194,14 +194,12 @@
     </label>
   </div>
 
-  <div class="content">
-    <div class="job-list">
-      <h2>Live Vacancies</h2>
-      <div class="job-item"><a onclick="openModal()">Senior Python Developer – Remote – $120k</a></div>
-      <div class="job-item"><a onclick="openModal()">Cybersecurity Analyst – London – £70k</a></div>
-      <div class="job-item"><a onclick="openModal()">Front-End Engineer – Hybrid – €90k</a></div>
-      <!-- Add more jobs here -->
-    </div>
+ <div class="job-list">
+  <h2>Live Vacancies</h2>
+  <div id="job-list">
+    <!-- Fetched jobs will be injected here -->
+  </div>
+</div>
 
     <div class="recommended-list">
       <h2>Jobs You Should Apply For</h2>
@@ -238,5 +236,48 @@
       }
     }
   </script>
+<script>
+  const cvSkills = [
+    "Python", "Flask", "SQL", "API integration", "Recruitment", "Client Management",
+    "Technical Sales", "Cybersecurity", "Business Development", "HTML", "CSS", "JavaScript"
+  ];
+
+  function matchScore(description, skills) {
+    const lowerDesc = description.toLowerCase();
+    const matches = skills.filter(skill => lowerDesc.includes(skill.toLowerCase()));
+    return Math.round((matches.length / skills.length) * 100);
+  }
+
+  async function fetchJobs() {
+    const response = await fetch('http://127.0.0.1:5000/api/jobs');
+    const jobs = await response.json();
+
+    const sortedJobs = jobs
+      .map(job => ({
+        ...job,
+        match_percent: matchScore(job.description, cvSkills)
+      }))
+      .sort((a, b) => b.match_percent - a.match_percent);
+
+    const jobList = document.getElementById('job-list');
+    jobList.innerHTML = '';
+
+    sortedJobs.forEach(job => {
+      const card = document.createElement('div');
+      card.className = 'job-card';
+      card.innerHTML = `
+        <h3>${job.title} <span class="match-badge">${job.match_percent}% Match</span></h3>
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Posted:</strong> ${new Date(job.created).toDateString()}</p>
+        <p>${job.description}</p>
+      `;
+      jobList.appendChild(card);
+    });
+  }
+
+  window.onload = fetchJobs;
+</script>
+
 </body>
 </html>
