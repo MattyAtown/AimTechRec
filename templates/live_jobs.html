@@ -2,282 +2,123 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Live Jobs – AiM Tech Rec</title>
-  <link rel="stylesheet" href="/static/css/styles.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AiMTechRec | Job Board</title>
   <style>
     body {
-      background-image: url('/static/images/background.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      color: #ffffff;
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      overflow-x: hidden;
+      padding: 0;
+      background-color: #f4f4f4;
     }
-
-    .header-container {
-      display: flex;
-      align-items: center;
-      padding: 30px 50px;
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .logo {
-      width: 160px;
-      margin-right: 30px;
-    }
-
-    .title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 42px;
-      color: #00ffff;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
-    }
-
-    #quote-banner {
-      background-color: #111;
-      color: #00ffff;
-      font-family: 'Ink Free', cursive;
-      font-size: 28px;
-      font-weight: bold;
-      text-align: center;
-      padding: 20px;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
-      text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
-      border-radius: 10px;
-      border: 2px solid #00ffff;
-      box-shadow: 0 0 30px #ff00ff;
-      animation: glow 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-      0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff; }
-      100% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff00ff; }
-    }
-
-    .content {
-      max-width: 1200px;
-      margin: 40px auto;
+    .container {
       display: flex;
       flex-wrap: wrap;
-      gap: 40px;
-      justify-content: center;
-    }
-
-    .job-list, .recommended-list {
-      flex: 1 1 45%;
-      max-height: 500px;
-      overflow-y: auto;
-      background: rgba(0, 0, 0, 0.85);
+      justify-content: space-between;
       padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px #00ffff;
     }
-
-    .job-list h2, .recommended-list h2 {
-      text-align: center;
-      color: #00ffff;
+    .panel {
+      flex: 1 1 48%;
+      background-color: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-height: 600px;
+    }
+    .panel h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 20px;
     }
-
-    .job-item {
-      padding: 10px 0;
-      border-bottom: 1px solid #00ffff;
+    .filter-bar input,
+    .filter-bar select {
+      padding: 8px;
+      font-size: 14px;
     }
-
-    .job-item:last-child {
+    .job-card {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+    .job-card:last-child {
       border-bottom: none;
     }
-
-    .job-item a {
-      color: #00ffff;
-      font-size: 18px;
-      font-weight: bold;
-      text-decoration: underline;
-      cursor: pointer;
+    .score-box {
+      margin: 10px 0;
     }
-
-    .filters {
-      max-width: 1000px;
-      margin: 20px auto;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px #00ffff;
-      text-align: center;
-    }
-
-    .filters select {
-      padding: 10px;
-      margin: 10px;
-      font-size: 16px;
-      background-color: #111;
-      color: #00ffff;
-      border: 2px solid #00ffff;
-      border-radius: 5px;
-    }
-
-    /* Modal styling */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background-color: #111;
-      padding: 30px;
-      border-radius: 10px;
-      width: 500px;
-      max-width: 90%;
-      color: #00ffff;
-      box-shadow: 0 0 30px #00ffff;
-    }
-
-    .modal-content textarea {
-      width: 100%;
-      height: 120px;
-      padding: 10px;
-      margin-top: 10px;
-      background: #222;
-      border: 2px solid #00ffff;
-      color: #00ffff;
-    }
-
-    .modal-content button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #00ffff;
-      border: none;
-      color: #111;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .modal-content button:hover {
-      background: #ff00ff;
-      color: #fff;
+    @media (max-width: 768px) {
+      .panel {
+        flex: 1 1 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="header-container">
-      <a href="{{ url_for('home') }}"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
-      <div class="title">Live Jobs - AiM Tech Recruitment</div>
+  <div class="container">
+    <!-- Panel 1: Live Listings -->
+    <div class="panel">
+      <h2>Live Job Listings</h2>
+      <div class="filter-bar">
+        <input type="text" placeholder="Job title" />
+        <input type="text" placeholder="Location" />
+        <input type="number" placeholder="Min Salary" />
+        <input type="number" placeholder="Max Salary" />
+        <select>
+          <option value="">Work Type</option>
+          <option value="remote">Remote</option>
+          <option value="hybrid">Hybrid</option>
+          <option value="onsite">On-site</option>
+        </select>
+        <select>
+          <option value="">Industry</option>
+          <option value="tech">Tech</option>
+          <option value="finance">Finance</option>
+          <option value="health">Healthcare</option>
+        </select>
+      </div>
+      <div id="live-jobs-container">
+        <div class="job-card">
+          <strong>Software Engineer</strong><br/>
+          London, UK - £65,000
+        </div>
+        <div class="job-card">
+          <strong>Cloud Architect</strong><br/>
+          Remote - £90,000
+        </div>
+        <!-- More job cards will be loaded here dynamically -->
+      </div>
     </div>
-  </header>
 
-  <div id="quote-banner">Energy Flows where Focus goes – Tony Robbins</div>
-
-  <div class="filters">
-    <label>Sort by:
-      <select>
-        <option>Date Advertised</option>
-        <option>Distance (Closest First)</option>
-        <option>Salary Bracket</option>
-        <option>Interview Match %</option>
-      </select>
-    </label>
-  </div>
-
- <div class="job-list">
-  <h2>Live Vacancies</h2>
-  <div id="job-list">
-    <!-- Fetched jobs will be injected here -->
-  </div>
-</div>
-
-    <div class="recommended-list">
+    <!-- Panel 2: Smart AI Matches -->
+    <div class="panel">
       <h2>Jobs You Should Apply For</h2>
-      <p>Matched by: CV Keywords • Distance • Salary • Role Titles</p>
-      <div class="job-item"><a onclick="openModal()">AI Engineer – Manchester – £85k</a></div>
-      <div class="job-item"><a onclick="openModal()">DevOps Specialist – Remote – $110k</a></div>
+      <div id="smart-matches-container">
+        <div class="job-card">
+          <strong>DevOps Engineer</strong><br/>
+          Manchester, UK - £75,000
+          <div class="score-box">
+            Skill Match: 92%<br/>
+            Interview Probability: 78%<br/>
+            Suitability Score: 88%
+          </div>
+        </div>
+        <div class="job-card">
+          <strong>AI Product Manager</strong><br/>
+          Remote - £100,000
+          <div class="score-box">
+            Skill Match: 85%<br/>
+            Interview Probability: 70%<br/>
+            Suitability Score: 80%
+          </div>
+        </div>
+        <!-- More smart matches added dynamically -->
+      </div>
     </div>
   </div>
-
-  <!-- Pop-up Modal -->
-  <div id="jobModal" class="modal">
-    <div class="modal-content">
-      <h2>Why do you want this role?</h2>
-      <p>Please summarise in your own words why you feel this job is what you want to do and why you'd be a good fit:</p>
-      <textarea placeholder="Type your summary here..."></textarea>
-      <button onclick="submitApplication()">Send</button>
-    </div>
-  </div>
-
-  <script>
-    function openModal() {
-      document.getElementById('jobModal').style.display = 'flex';
-    }
-
-    function submitApplication() {
-      alert("📨 Your application has been sent to: apply@aimtechrec.com");
-      document.getElementById('jobModal').style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-      const modal = document.getElementById('jobModal');
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    }
-  </script>
-<script>
-  const cvSkills = [
-    "Python", "Flask", "SQL", "API integration", "Recruitment", "Client Management",
-    "Technical Sales", "Cybersecurity", "Business Development", "HTML", "CSS", "JavaScript"
-  ];
-
-  function matchScore(description, skills) {
-    const lowerDesc = description.toLowerCase();
-    const matches = skills.filter(skill => lowerDesc.includes(skill.toLowerCase()));
-    return Math.round((matches.length / skills.length) * 100);
-  }
-
-  async function fetchJobs() {
-    const response = await fetch('http://127.0.0.1:5000/api/jobs');
-    const jobs = await response.json();
-
-    const sortedJobs = jobs
-      .map(job => ({
-        ...job,
-        match_percent: matchScore(job.description, cvSkills)
-      }))
-      .sort((a, b) => b.match_percent - a.match_percent);
-
-    const jobList = document.getElementById('job-list');
-    jobList.innerHTML = '';
-
-    sortedJobs.forEach(job => {
-      const card = document.createElement('div');
-      card.className = 'job-card';
-      card.innerHTML = `
-        <h3>${job.title} <span class="match-badge">${job.match_percent}% Match</span></h3>
-        <p><strong>Company:</strong> ${job.company}</p>
-        <p><strong>Location:</strong> ${job.location}</p>
-        <p><strong>Posted:</strong> ${new Date(job.created).toDateString()}</p>
-        <p>${job.description}</p>
-      `;
-      jobList.appendChild(card);
-    });
-  }
-
-  window.onload = fetchJobs;
-</script>
-
 </body>
 </html>
