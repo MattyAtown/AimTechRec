@@ -1,44 +1,83 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Jobs - AiM Tech Rec</title>
+    <title>AiM Job Matcher</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        body {
+            background-image: url('/static/images/background.png');
+            background-size: cover;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .aim-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 12px;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #00ffff;
+        }
+        input, select, button, textarea {
+            padding: 10px;
+            margin: 6px 0;
+            width: 100%;
+            border-radius: 8px;
+            border: none;
+        }
+        button {
+            background-color: #00ffff;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .job-card {
+            background: #111;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .match {
+            font-weight: bold;
+            color: #00ff99;
+        }
+        .cv-preview {
+            white-space: pre-wrap;
+            background: #222;
+            color: #ccc;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
-<body style="background-image: url('/static/background.png'); background-size: cover;">
-    <div class="banner">
-        <img src="/static/logo.png" alt="Logo" class="logo" onclick="window.location.href='index.html'" />
-        <h1 class="tech-banner-text">Job Boards are Boring – We AiM with Precision</h1>
+<body>
+    <div class="aim-container">
+        <h1>AiM Smart Job Search</h1>
+        
+        <label for="job-title">Search Job Title</label>
+        <input type="text" id="job-title" placeholder="e.g., Software Developer">
+
+        <label for="location">Location</label>
+        <input type="text" id="location" placeholder="e.g., London">
+
+        <button id="search-btn">Search Jobs</button>
+
+        <h2>Upload Your CV</h2>
+        <input type="file" id="cv-input">
+        <button id="upload-btn">Upload & Preview</button>
+
+        <div id="cv-preview" class="cv-preview"></div>
+
+        <h2>Recommended Jobs</h2>
+        <div id="job-results"></div>
     </div>
 
-    <!-- Upload CV Section -->
-    <div class="upload-section neon-box">
-        <h2 class="tech-label">Upload Your CV</h2>
-        <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" />
-        <div id="cv-status" class="cv-status"></div>
-    </div>
-
-    <!-- Filter Section -->
-    <div class="filter-section neon-box">
-        <h2 class="tech-label">Search Jobs</h2>
-        <input type="text" id="job-title" placeholder="Job Title" class="tech-input"/>
-        <input type="text" id="location" placeholder="Location (e.g., London)" class="tech-input"/>
-        <button id="search-btn" class="neon-button">Search Jobs</button>
-    </div>
-
-    <!-- Job Results -->
-    <div id="results-container" class="results-container">
-        <div class="results-column neon-box">
-            <h3 class="tech-label">Search Results</h3>
-            <div id="search-results" class="job-results"></div>
-        </div>
-        <div class="results-column neon-box">
-            <h3 class="tech-label">Matched for You</h3>
-            <div id="matched-results" class="job-results"></div>
-        </div>
-    </div>
-
-    <script src="/static/scripts.js"></script>
+    <script src="/static/js/scripts.js"></script>
 </body>
 </html>
