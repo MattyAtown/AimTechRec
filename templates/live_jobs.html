@@ -3,26 +3,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Jobs - AiM Tech</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>AiM Job Connector</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body>
-    <header>
-        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="AiM Logo" /></a>
-        <div class="banner-quote">Job Boards are Boring — We AiM with Precision</div>
-    </header>
+<body style="background-image: url('/static/images/background.png'); background-size: cover;">
 
-    <div class="job-section">
-        <div class="job-box">
+<header class="header-banner">
+    <a href="/"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
+    <h1 class="banner-title">Job Boards are Boring – we AiM with Precision</h1>
+</header>
+
+<main class="main-content">
+    <section class="filters-section">
+        <h2>Filter Jobs</h2>
+        <form id="job-filter-form">
+            <label>Location:
+                <select name="location">
+                    <option value="">Any</option>
+                    <option value="London">London</option>
+                    <option value="Manchester">Manchester</option>
+                    <option value="Birmingham">Birmingham</option>
+                </select>
+            </label>
+            <label>Company Size:
+                <select name="company_size">
+                    <option value="">Any</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                </select>
+            </label>
+            <label>Culture:
+                <select name="culture">
+                    <option value="">Any</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Office">Office</option>
+                </select>
+            </label>
+            <label>Industry:
+                <select name="industry">
+                    <option value="">Any</option>
+                    <option value="IT">IT</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Engineering">Engineering</option>
+                </select>
+            </label>
+            <label>Min Salary:
+                <input type="number" name="salary_min" placeholder="£">
+            </label>
+            <button type="submit">Search Jobs</button>
+        </form>
+    </section>
+
+    <section class="results-columns">
+        <div class="results-box">
             <h2>Search Results</h2>
-            <div id="search-results">No jobs loaded yet.</div>
+            <div id="job-results">Loading jobs...</div>
         </div>
-        <div class="job-box">
-            <h2>Matched for You</h2>
-            <div id="matched-jobs">Upload your CV to see matched jobs.</div>
-        </div>
-    </div>
 
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+        <div class="matched-box">
+            <h2>Matched for You</h2>
+            <div id="match-results">
+                <p>No CV uploaded.</p>
+                <form action="/upload_cv" method="post" enctype="multipart/form-data">
+                    <input type="file" name="cv">
+                    <button type="submit">Upload CV</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+document.getElementById('job-filter-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const location = formData.get('location');
+    const response = await fetch(`/api/jobs?location=${location}`);
+    const jobs = await response.json();
+    const container = document.getElementById('job-results');
+    container.innerHTML = '';
+    if (!jobs.length) {
+        container.innerHTML = '<p>No jobs found.</p>';
+    } else {
+        jobs.forEach(job => {
+            container.innerHTML += `<div class="job-card">
+                <h3>${job.title}</h3>
+                <p><strong>${job.location}</strong></p>
+                <p>${job.category || ''}</p>
+                <button onclick="alert('More info coming soon!')">Find Out More</button>
+            </div>`;
+        });
+    }
+});
+</script>
+
 </body>
 </html>
