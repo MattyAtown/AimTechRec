@@ -1,60 +1,83 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-    const searchBtn = document.getElementById("search-btn");
-    const uploadCvInput = document.getElementById("cv-upload");
-    const searchResultsDiv = document.getElementById("search-results");
-    const matchResultsDiv = document.getElementById("match-results");
+  const searchButton = document.getElementById("searchButton");
+  const cvUpload = document.getElementById("cvUpload");
+  const jobResults = document.getElementById("jobResults");
+  const matchResults = document.getElementById("matchResults");
 
-    if (searchBtn) {
-        searchBtn.addEventListener("click", async () => {
-            const jobTitle = document.getElementById("job-title").value.trim();
-            const location = document.getElementById("location").value.trim();
+  // Handle job search
+  if (searchButton) {
+    searchButton.addEventListener("click", () => {
+      const title = document.getElementById("jobTitle").value || "";
+      const location = document.getElementById("jobLocation").value || "";
 
-            const queryParams = new URLSearchParams();
-            if (jobTitle) queryParams.append("title", jobTitle);
-            if (location) queryParams.append("location", location);
-
-            const response = await fetch(`/api/jobs?${queryParams}`);
-            const jobs = await response.json();
-            renderJobs(jobs, searchResultsDiv);
-        });
-    }
-
-    function renderJobs(jobs, container) {
-        container.innerHTML = "";
-        if (!jobs.length) {
-            container.innerHTML = "<p>No jobs found.</p>";
+      fetch(`/api/jobs?title=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}`)
+        .then((response) => response.json())
+        .then((jobs) => {
+          jobResults.innerHTML = "";
+          if (jobs.length === 0) {
+            jobResults.innerHTML = "<p>No results found.</p>";
             return;
-        }
-        jobs.forEach(job => {
+          }
+
+          jobs.forEach((job) => {
             const jobCard = document.createElement("div");
             jobCard.className = "job-card";
-            jobCard.innerHTML = `
-                <h3>${job.title}</h3>
-                <p><strong>Company:</strong> ${job.company || "N/A"}</p>
-                <p><strong>Location:</strong> ${job.location || "N/A"}</p>
-                <p><strong>Category:</strong> ${job.category || "N/A"}</p>
-                <p><strong>Contract:</strong> ${job.contract_time || "N/A"}</p>
-                <p><strong>Salary:</strong> £${job.salary_min?.toFixed(2) || "N/A"}</p>
-            `;
-            container.appendChild(jobCard);
-        });
-    }
 
-    if (uploadCvInput) {
-        uploadCvInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const resultBox = document.getElementById("cv-review-box");
-                    if (resultBox) {
-                        resultBox.innerText = "Uploaded CV: " + file.name;
-                        resultBox.style.display = "block";
-                    }
-                };
-                reader.readAsText(file);
-            }
+            jobCard.innerHTML = `
+              <h3>${job.title}</h3>
+              <p><strong>Company:</strong> ${job.company}</p>
+              <p><strong>Location:</strong> ${job.location}</p>
+              <p><strong>Industry:</strong> ${job.category}</p>
+              <button class="neon-button">Find Out More</button>
+            `;
+            jobResults.appendChild(jobCard);
+          });
+        })
+        .catch((err) => {
+          console.error("Error fetching jobs:", err);
+          jobResults.innerHTML = "<p>Error loading job results.</p>";
         });
-    }
+    });
+  }
+
+  // Handle CV upload
+  if (cvUpload) {
+    cvUpload.addEventListener("change", () => {
+      const file = cvUpload.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("cv", file);
+
+      fetch("/upload_cv", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          matchResults.innerHTML = "";
+          if (!data.matches || data.matches.length === 0) {
+            matchResults.innerHTML = "<p>No matching jobs found for this CV.</p>";
+            return;
+          }
+
+          data.matches.forEach((match) => {
+            const matchCard = document.createElement("div");
+            matchCard.className = "match-card";
+
+            matchCard.innerHTML = `
+              <h3>${match.title} (${match.match_percent}% match)</h3>
+              <p><strong>Location:</strong> ${match.location}</p>
+              <p><strong>Reasons:</strong> ${match.reasons.join(", ")}</p>
+              ${match.match_percent < 70 ? '<button onclick="window.location.href=\'/cv_dr.html\'" class="neon-button">Improve CV</button>' : ""}
+            `;
+            matchResults.appendChild(matchCard);
+          });
+        })
+        .catch((err) => {
+          console.error("Error uploading CV:", err);
+          matchResults.innerHTML = "<p>There was a problem processing your CV.</p>";
+        });
+    });
+  }
 });
