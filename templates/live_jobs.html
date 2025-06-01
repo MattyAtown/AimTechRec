@@ -3,88 +3,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Job Connector</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <title>Live Jobs - AiM Tech</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body style="background-image: url('/static/images/background.png'); background-size: cover; color: #00ffcc;">
-    <header style="display: flex; align-items: center; justify-content: space-between; padding: 1em;">
-        <a href="/"><img src="/static/images/logo.png" alt="Logo" style="height: 60px;"></a>
-        <h1 style="color: #00ffcc;">Job Connector</h1>
+<body>
+    <header>
+        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="AiM Logo" /></a>
+        <div class="banner-quote">Job Boards are Boring — We AiM with Precision</div>
     </header>
-    <section style="text-align: center; padding: 1em; font-size: 1.4em; font-weight: bold;">
-        <div class="banner">Job Boards are Boring – <span class="highlight">We AiM with Precision</span></div>
-    </section>
-    <main style="display: flex; justify-content: space-around; padding: 2em;">
-        <section style="width: 30%;">
-            <h2>Filters</h2>
-            <form id="filter-form">
-                <input type="text" placeholder="Job Title" name="title"><br>
-                <input type="text" placeholder="Location (UK city)" name="location"><br>
-                <input type="number" placeholder="Min Salary" name="minSalary"><br>
-                <input type="number" placeholder="Max Salary" name="maxSalary"><br>
-                <select name="workType">
-                    <option value="">Work Type</option>
-                    <option value="remote">Remote</option>
-                    <option value="hybrid">Hybrid</option>
-                    <option value="onsite">Office/Site</option>
-                </select><br>
-                <select name="companySize">
-                    <option value="">Company Size</option>
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                </select><br>
-                <select name="industry">
-                    <option value="">Industry</option>
-                    <option value="IT">IT</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Industrial">Industrial</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Science">Science</option>
-                </select><br>
-                <button type="submit">Search</button>
-            </form>
-        </section>
-        <section style="width: 30%;">
-            <h2>Search Results</h2>
-            <div id="search-results" class="results-box"></div>
-        </section>
-        <section style="width: 30%;">
-            <h2>Matched For You</h2>
-            <div id="matched-results" class="results-box"></div>
-            <div>
-                <label for="cvUpload">Upload CV:</label>
-                <input type="file" id="cvUpload" name="cvUpload" accept=".pdf,.doc,.docx">
-                <button onclick="matchJobs()">Get Matches</button>
-            </div>
-        </section>
-    </main>
-    <script>
-        document.getElementById("filter-form").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const params = new URLSearchParams(formData).toString();
-            const response = await fetch(`/api/jobs?${params}`);
-            const jobs = await response.json();
-            const container = document.getElementById("search-results");
-            container.innerHTML = jobs.map(job => \`
-                <div class="job-card">
-                    <strong>\${job.title}</strong><br>
-                    \${job.location} - \${job.company}<br>
-                    <button>Find Out More</button>
-                </div>
-            \`).join('');
-        });
 
-        function matchJobs() {
-            const container = document.getElementById("matched-results");
-            container.innerHTML = `
-                <div class="job-card"><strong>Job A</strong><br>90% match - industry, skills, location, title</div>
-                <div class="job-card"><strong>Job B</strong><br>80% match - skills, title, location</div>
-                <div class="job-card"><strong>Job C</strong><br>60% match - skills, title<br>
-                <a href="/cv_dr.html"><button>Want help improving your chances?</button></a></div>
-            `;
-        }
-    </script>
+    <div class="job-section">
+        <div class="job-box">
+            <h2>Search Results</h2>
+            <div id="search-results">No jobs loaded yet.</div>
+        </div>
+        <div class="job-box">
+            <h2>Matched for You</h2>
+            <div id="matched-jobs">Upload your CV to see matched jobs.</div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
