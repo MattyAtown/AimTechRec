@@ -3,101 +3,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AiM Job Connector</title>
+    <title>Live Jobs - AiM Tech Rec</title>
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body style="background-image: url('/static/images/background.png'); background-size: cover;">
+<body style="background-image: url('/static/background.png'); background-size: cover;">
+    <div class="banner">
+        <img src="/static/logo.png" alt="Logo" class="logo" onclick="window.location.href='index.html'" />
+        <h1 class="tech-banner-text">Job Boards are Boring – We AiM with Precision</h1>
+    </div>
 
-<header class="header-banner">
-    <a href="/"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
-    <h1 class="banner-title">Job Boards are Boring – we AiM with Precision</h1>
-</header>
+    <!-- Upload CV Section -->
+    <div class="upload-section neon-box">
+        <h2 class="tech-label">Upload Your CV</h2>
+        <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" />
+        <div id="cv-status" class="cv-status"></div>
+    </div>
 
-<main class="main-content">
-    <section class="filters-section">
-        <h2>Filter Jobs</h2>
-        <form id="job-filter-form">
-            <label>Location:
-                <select name="location">
-                    <option value="">Any</option>
-                    <option value="London">London</option>
-                    <option value="Manchester">Manchester</option>
-                    <option value="Birmingham">Birmingham</option>
-                </select>
-            </label>
-            <label>Company Size:
-                <select name="company_size">
-                    <option value="">Any</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Large">Large</option>
-                </select>
-            </label>
-            <label>Culture:
-                <select name="culture">
-                    <option value="">Any</option>
-                    <option value="Remote">Remote</option>
-                    <option value="Hybrid">Hybrid</option>
-                    <option value="Office">Office</option>
-                </select>
-            </label>
-            <label>Industry:
-                <select name="industry">
-                    <option value="">Any</option>
-                    <option value="IT">IT</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Engineering">Engineering</option>
-                </select>
-            </label>
-            <label>Min Salary:
-                <input type="number" name="salary_min" placeholder="£">
-            </label>
-            <button type="submit">Search Jobs</button>
-        </form>
-    </section>
+    <!-- Filter Section -->
+    <div class="filter-section neon-box">
+        <h2 class="tech-label">Search Jobs</h2>
+        <input type="text" id="job-title" placeholder="Job Title" class="tech-input"/>
+        <input type="text" id="location" placeholder="Location (e.g., London)" class="tech-input"/>
+        <button id="search-btn" class="neon-button">Search Jobs</button>
+    </div>
 
-    <section class="results-columns">
-        <div class="results-box">
-            <h2>Search Results</h2>
-            <div id="job-results">Loading jobs...</div>
+    <!-- Job Results -->
+    <div id="results-container" class="results-container">
+        <div class="results-column neon-box">
+            <h3 class="tech-label">Search Results</h3>
+            <div id="search-results" class="job-results"></div>
         </div>
-
-        <div class="matched-box">
-            <h2>Matched for You</h2>
-            <div id="match-results">
-                <p>No CV uploaded.</p>
-                <form action="/upload_cv" method="post" enctype="multipart/form-data">
-                    <input type="file" name="cv">
-                    <button type="submit">Upload CV</button>
-                </form>
-            </div>
+        <div class="results-column neon-box">
+            <h3 class="tech-label">Matched for You</h3>
+            <div id="matched-results" class="job-results"></div>
         </div>
-    </section>
-</main>
+    </div>
 
-<script>
-document.getElementById('job-filter-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const location = formData.get('location');
-    const response = await fetch(`/api/jobs?location=${location}`);
-    const jobs = await response.json();
-    const container = document.getElementById('job-results');
-    container.innerHTML = '';
-    if (!jobs.length) {
-        container.innerHTML = '<p>No jobs found.</p>';
-    } else {
-        jobs.forEach(job => {
-            container.innerHTML += `<div class="job-card">
-                <h3>${job.title}</h3>
-                <p><strong>${job.location}</strong></p>
-                <p>${job.category || ''}</p>
-                <button onclick="alert('More info coming soon!')">Find Out More</button>
-            </div>`;
-        });
-    }
-});
-</script>
-
+    <script src="/static/scripts.js"></script>
 </body>
 </html>
