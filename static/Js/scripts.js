@@ -37,3 +37,40 @@ window.onload = () => {
     quoteElement.textContent = quotes[currentQuote];
     setInterval(updateBanner, 60000);  // 60 seconds
 };
+
+document.getElementById('search-btn').addEventListener('click', async () => {
+    const title = document.getElementById('job-title').value;
+    const location = document.getElementById('location').value;
+
+    const response = await fetch(`/api/jobs?title=${title}&location=${location}`);
+    const jobs = await response.json();
+
+    const resultsContainer = document.getElementById('search-results');
+    resultsContainer.innerHTML = '';
+    jobs.forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <h3>${job.title}</h3>
+            <p>${job.location}</p>
+            <p><strong>Match:</strong> 75%</p> <!-- Placeholder match -->
+            <button>Find out more</button>
+        `;
+        resultsContainer.appendChild(card);
+    });
+});
+
+document.getElementById('cv-upload').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('cv', file);
+
+    const response = await fetch('/upload_cv', {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await response.json();
+    const cvStatus = document.getElementById('cv-status');
+    cvStatus.innerText = `Uploaded: ${result.filename}`;
+});
