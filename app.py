@@ -170,37 +170,63 @@ def get_live_jobs():
     min_salary = request.args.get('minSalary', '0')
     max_salary = request.args.get('maxSalary', '1000000')
 
-    query = f"{title} {location}"
+    jobs = []
 
-    url = "https://jsearch.p.rapidapi.com/search"
-    headers = {
-        "X-RapidAPI-Key": "aa532f1f40msh291e05859835c93p10f3b6jsn302f1e4467c7",
-        "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
-    }
-    params = {
-        "query": query,
-        "num_pages": "1",
-        "min_salary": min_salary,
-        "max_salary": max_salary
-    }
-
+    # 1. JSearch API Integration
     try:
-        response = requests.get(url, headers=headers, params=params)
-        results = response.json().get("data", [])
-        
-        jobs = []
-        for job in results:
+        query = f"{title} {location}"
+        headers = {
+            "X-RapidAPI-Key": os.environ.get("RAPIDAPI_KEY", ""),
+            "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
+        }
+        params = {
+            "query": query,
+            "num_pages": "1",
+            "min_salary": min_salary,
+            "max_salary": max_salary
+        }
+        response = requests.get("https://jsearch.p.rapidapi.com/search", headers=headers, params=params)
+        data = response.json().get("data", [])
+        for job in data:
             jobs.append({
                 "title": job.get("job_title", "Unknown Role"),
                 "location": job.get("job_city", "Unknown Location"),
                 "salary": job.get("salary", "N/A"),
-                "link": job.get("job_apply_link", "#")
+                "link": job.get("job_apply_link", "#"),
+                "source": "JSearch"
             })
-
-        return jsonify(jobs)
     except Exception as e:
-        print("API Error:", e)
-        return jsonify([]), 500
+        print("JSearch API Error:", e)
+
+    # 2. Adzuna API Integration
+    try:
+        ADZUNA_APP_ID = os.environ.get("ADZUNA_APP_ID", "9e85cf1e")
+        ADZUNA_APP_KEY = os.environ.get("ADZUNA_APP_KEY", "3c67192f4c294e0c5277762f4777f852")
+        adzuna_url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1"
+        adzuna_params = {
+            "app_id": ADZUNA_APP_ID,
+            "app_key": ADZUNA_APP_KEY,
+            "results_per_page": 20,
+            "what": title,
+            "where": location,
+            "salary_min": min_salary,
+            "salary_max": max_salary,
+            "content-type": "application/json"
+        }
+        adzuna_resp = requests.get(adzuna_url, params=adzuna_params)
+        adzuna_data = adzuna_resp.json().get("results", [])
+        for job in adzuna_data:
+            jobs.append({
+                "title": job.get("title", "N/A"),
+                "location": job.get("location", {}).get("display_name", "N/A"),
+                "salary": f"£{int(job.get('salary_min', 0))}/year" if job.get("salary_min") else "N/A",
+                "link": job.get("redirect_url", "#"),
+                "source": "Adzuna"
+            })
+    except Exception as e:
+        print("Adzuna API Error:", e)
+
+    return jsonify(jobs)
 
 
     import requests
@@ -314,6 +340,63 @@ def upload_cv():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
     return jsonify({"message": "CV uploaded successfully", "filename": filename})
+
+@app.route('/api/smart_match_v2')
+def smart_match_v2():
+    if 'user_id' not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    user = User.query.get(session['user_id'])
+    if not user or not user.cv_filename:
+        return jsonify({"error": "No CV found"}), 404
+
+    try:
+        # Load CV text
+        cv_path = os.path.join(app.config['UPLOAD_FOLDER'], user.cv_filename)
+        with open(cv_path, 'r', encoding='utf-8', errors='ignore') as f:
+            cv_text = f.read()
+
+        keywords = [word.lower() for word in cv_text.split() if len(word) > 4]
+        top_keywords = keywords[:15]  # Only use top 15 words to reduce noise
+
+        matches = []
+        jobs = Job.query.order_by(Job.date_posted.desc()).all()
+
+        for job in jobs:
+            job_score = 0
+            reasons = []
+
+            # Title match
+            if any(k in job.title.lower() for k in top_keywords):
+                job_score += 20
+                reasons.append("Title match")
+
+            # Location match
+            if any(k in (job.location or '').lower() for k in top_keywords):
+                job_score += 10
+                reasons.append("Location match")
+
+            # Description match
+            desc = job.__dict__.get("description", "").lower()
+            matched_keywords = [k for k in top_keywords if k in desc]
+            job_score += len(matched_keywords) * 3
+            if matched_keywords:
+                reasons.append(f"{len(matched_keywords)} keyword(s) matched")
+
+            if job_score >= 40:
+                matches.append({
+                    "title": job.title,
+                    "location": job.location,
+                    "salary": job.salary or "N/A",
+                    "score": f"{min(job_score, 100)}%",
+                    "reasons": reasons
+                })
+
+        return jsonify(sorted(matches, key=lambda x: int(x['score'].replace('%', '')), reverse=True)[:10])
+
+    except Exception as e:
+        print("Smart match error:", e)
+        return jsonify({"error": "Server error"}), 500
 
 if __name__ == '__main__':
     with app.app_context():
