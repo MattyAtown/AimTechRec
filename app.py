@@ -295,6 +295,25 @@ def get_smart_matches():
         print("Smart Match Error:", e)
         return jsonify([])
 
+from flask import Flask, request, jsonify, render_template
+from werkzeug.utils import secure_filename
+import os
+
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/upload_cv', methods=['POST'])
+def upload_cv():
+    if 'cv' not in request.files:
+        return "No file part", 400
+    file = request.files['cv']
+    if file.filename == '':
+        return "No selected file", 400
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    return jsonify({"message": "CV uploaded successfully", "filename": filename})
 
 if __name__ == '__main__':
     with app.app_context():
