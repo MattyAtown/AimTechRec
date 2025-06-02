@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AiM Job Matcher</title>
+    <title>AiM Smart Job Search</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <style>
         body {
@@ -12,20 +12,26 @@
             font-family: 'Segoe UI', sans-serif;
         }
         .aim-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 40px auto;
             padding: 20px;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 12px;
         }
         h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            margin-bottom: 20px;
             color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
         }
-        input, select, button, textarea {
+        h2 {
+            font-size: 24px;
+            margin-top: 30px;
+            color: #00ccff;
+        }
+        input, select, button {
             padding: 10px;
-            margin: 6px 0;
+            margin: 6px 0 12px 0;
             width: 100%;
             border-radius: 8px;
             border: none;
@@ -36,15 +42,11 @@
             font-weight: bold;
             cursor: pointer;
         }
-        .job-card {
+        .job-card, .match-card {
             background: #111;
-            margin: 10px 0;
+            margin: 12px 0;
             padding: 15px;
             border-radius: 8px;
-        }
-        .match {
-            font-weight: bold;
-            color: #00ff99;
         }
         .cv-preview {
             white-space: pre-wrap;
@@ -58,24 +60,27 @@
 </head>
 <body>
     <div class="aim-container">
-        <h1>AiM Smart Job Search</h1>
-        
-        <label for="job-title">Search Job Title</label>
-        <input type="text" id="job-title" placeholder="e.g., Software Developer">
+        <h1>🎯 AiM Job Matcher</h1>
 
-        <label for="location">Location</label>
-        <input type="text" id="location" placeholder="e.g., London">
+        <label for="job-title">Search Job Title</label>
+        <input type="text" id="job-title" placeholder="e.g. Cybersecurity Analyst">
+
+        <label for="job-location">Location</label>
+        <input type="text" id="job-location" placeholder="e.g. London">
 
         <button id="search-btn">Search Jobs</button>
 
-        <h2>Upload Your CV</h2>
+        <h2>📎 Upload Your CV</h2>
         <input type="file" id="cv-input">
-        <button id="upload-btn">Upload & Preview</button>
+        <button id="upload-btn">Upload & Match</button>
 
         <div id="cv-preview" class="cv-preview"></div>
 
-        <h2>Recommended Jobs</h2>
+        <h2>📋 Search Results</h2>
         <div id="job-results"></div>
+
+        <h2>🔥 Matched for You</h2>
+        <div id="matched-jobs"></div>
     </div>
 
     <script src="/static/js/scripts.js"></script>
