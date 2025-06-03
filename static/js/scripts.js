@@ -1,23 +1,21 @@
-// scripts.js
-
 document.addEventListener("DOMContentLoaded", function () {
   const searchBtn = document.getElementById("searchJobs");
-  const resultsDiv = document.getElementById("results");
   const matchBtn = document.getElementById("matchBtn");
   const fileInput = document.getElementById("cvUpload");
   const cvStatus = document.getElementById("cvStatus");
+  const resultsDiv = document.getElementById("results");
   let uploadedCVText = "";
 
-  searchBtn?.addEventListener("click", async function () {
+  searchBtn.addEventListener("click", async () => {
     const title = document.getElementById("jobTitle").value;
     const location = document.getElementById("jobLocation").value;
 
     const res = await fetch(`/api/jobs?title=${title}&location=${location}`);
     const jobs = await res.json();
-    displayJobs(jobs);
+    renderResults(jobs, []);
   });
 
-  fileInput?.addEventListener("change", async function () {
+  fileInput.addEventListener("change", async () => {
     const file = fileInput.files[0];
     if (!file) return;
 
@@ -28,14 +26,15 @@ document.addEventListener("DOMContentLoaded", function () {
       method: "POST",
       body: formData,
     });
+
     const data = await res.json();
     uploadedCVText = data.text;
-    cvStatus.innerHTML = "✅ CV Uploaded";
+    cvStatus.textContent = "✅ CV Uploaded";
   });
 
-  matchBtn?.addEventListener("click", async function () {
+  matchBtn.addEventListener("click", async () => {
     if (!uploadedCVText) {
-      alert("Upload your CV first");
+      alert("Upload your CV first.");
       return;
     }
 
@@ -44,64 +43,52 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cv_text: uploadedCVText }),
     });
+
     const matches = await res.json();
-    displayMatches(matches);
+    renderResults([], matches);
   });
 
-  function displayJobs(jobs) {
-    const jobList = document.createElement("div");
-    jobList.className = "job-list";
-    if (jobs.length === 0) {
-      jobList.innerHTML = "<p>No jobs found.</p>";
-    } else {
-      jobs.forEach((job) => {
-        const div = document.createElement("div");
-        div.className = "job-box";
-        div.innerHTML = `
-          <h4>${job.title}</h4>
-          <p><strong>Location:</strong> ${job.location}</p>
-          <p><strong>Salary:</strong> £${job.salary_min || "Not listed"}</p>
-          <a href="#">See More</a>
-        `;
-        jobList.appendChild(div);
-      });
-    }
-    updateResults(jobList, null);
-  }
-
-  function displayMatches(matches) {
-    const matchList = document.createElement("div");
-    matchList.className = "match-list";
-    if (matches.length === 0) {
-      matchList.innerHTML = "<p>No matched jobs.</p>";
-    } else {
-      matches.forEach((job) => {
-        const div = document.createElement("div");
-        div.className = "match-box";
-        div.innerHTML = `
-          <h4>${job.title}</h4>
-          <p><strong>Location:</strong> ${job.location}</p>
-          <p><strong>Match:</strong> ${job.match}%</p>
-          <a href="#">Apply</a>
-        `;
-        matchList.appendChild(div);
-      });
-    }
-    updateResults(null, matchList);
-  }
-
-  function updateResults(jobList, matchList) {
+  function renderResults(jobs, matches) {
     resultsDiv.innerHTML = "";
+
     const container = document.createElement("div");
     container.className = "result-container";
 
     const leftBox = document.createElement("div");
     leftBox.className = "left-box";
+    leftBox.innerHTML = "<h3>Job Listings</h3>";
+
     const rightBox = document.createElement("div");
     rightBox.className = "right-box";
+    rightBox.innerHTML = "<h3>Matched for You</h3>";
 
-    if (jobList) leftBox.appendChild(jobList);
-    if (matchList) rightBox.appendChild(matchList);
+    if (jobs.length === 0) {
+      leftBox.innerHTML += "<p>No jobs found.</p>";
+    } else {
+      jobs.forEach((job) => {
+        leftBox.innerHTML += `
+          <div class="job-box">
+            <h4>${job.title}</h4>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Salary:</strong> £${job.salary_min || "Not listed"}</p>
+            <a href="#">See More</a>
+          </div>`;
+      });
+    }
+
+    if (matches.length === 0) {
+      rightBox.innerHTML += "<p>No matched jobs found.</p>";
+    } else {
+      matches.forEach((match) => {
+        rightBox.innerHTML += `
+          <div class="match-box">
+            <h4>${match.title}</h4>
+            <p><strong>Location:</strong> ${match.location}</p>
+            <p><strong>Match:</strong> ${match.match}%</p>
+            <a href="#">Apply</a>
+          </div>`;
+      });
+    }
 
     container.appendChild(leftBox);
     container.appendChild(rightBox);
