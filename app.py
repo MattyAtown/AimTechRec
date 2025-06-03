@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_cors import CORS
 import requests
 import os
@@ -8,12 +8,12 @@ import openai
 app = Flask(__name__)
 CORS(app)
 
-# Environment variables for security
+# Environment variables
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# In-memory CV storage (for demo)
+# In-memory CV text (temporary storage)
 cv_text_store = ""
 
 @app.route('/')
@@ -23,6 +23,22 @@ def home():
 @app.route('/live_jobs')
 def live_jobs():
     return render_template("live_jobs.html")
+
+@app.route('/login_signup')
+def login_signup():
+    return render_template("login_signup.html")
+
+@app.route('/cv_dr')
+def cv_dr():
+    return render_template("cv_dr.html")
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template("dashboard.html")
+
+@app.route('/cv_storage_success')
+def cv_storage_success():
+    return render_template("cv_storage_success.html")
 
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
@@ -60,7 +76,6 @@ def match_jobs():
     if not user_cv:
         return jsonify([])
 
-    # Example jobs to compare (would usually come from DB or Adzuna cache)
     dummy_jobs = [
         {"title": "Software Engineer", "location": "London", "description": "We are looking for a Python developer with Flask experience."},
         {"title": "Data Analyst", "location": "Manchester", "description": "Strong skills in SQL and data visualization."},
