@@ -141,6 +141,8 @@ def logout():
     # Add your logout logic later if needed
     return redirect(url_for('login_signup'))
 
+from flask import render_template
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
