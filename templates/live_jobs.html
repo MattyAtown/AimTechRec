@@ -59,30 +59,31 @@
     </style>
 </head>
 <body>
-    <div class="aim-container">
-        <h1>🎯 AiM Job Matcher</h1>
+<div class="aim-container">
+    <h1>🎯 AiM Job Matcher</h1>
 
-        <label for="job-title">Search Job Title</label>
-        <input type="text" id="job-title" placeholder="e.g. Cybersecurity Analyst">
+    <label for="job-title">Search Job Title</label>
+    <input type="text" id="job-title" placeholder="e.g. Cybersecurity Analyst">
 
-        <label for="job-location">Location</label>
-        <input type="text" id="job-location" placeholder="e.g. London">
+    <label for="job-location">Location</label>
+    <input type="text" id="job-location" placeholder="e.g. London">
 
-        <button id="search-btn">Search Jobs</button>
+    <button id="search-jobs">Search Jobs</button>
+    <button id="match-jobs">Match My CV</button>
 
-        <h2>📎 Upload Your CV</h2>
-        <input type="file" id="cv-input">
-        <button id="upload-btn">Upload & Match</button>
+    <h2>📎 Upload Your CV</h2>
+    <input type="file" id="cv-input" name="cv">
+    <button id="upload-btn">Upload & Match</button>
 
-        <div id="cv-preview" class="cv-preview"></div>
+    <div id="cv-preview" class="cv-preview"></div>
 
-        <h2>📋 Search Results</h2>
-        <div id="job-results"></div>
+    <h2>📋 Search Results</h2>
+    <div id="job-results"></div>
 
-        <h2>🔥 Matched for You</h2>
-        <div id="matched-jobs"></div>
-    </div>
+    <h2>🔥 Matched for You</h2>
+    <div id="matched-jobs"></div>
+</div>
 
-    <script src="/static/js/scripts.js"></script>
+<script src="/static/js/scripts.js"></script>
 </body>
 </html>
