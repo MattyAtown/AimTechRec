@@ -124,6 +124,26 @@ def extract_reasons(text):
     lines = text.split("\n")
     reasons = [line.strip("- ") for line in lines if "match" in line.lower() or "because" in line.lower()]
     return reasons[:3] if reasons else ["See description"]
+@app.route('/services')
+def services():
+    return render_template("services.html")
+
+@app.route('/about')
+def about():
+    return render_template("about.html")
+
+@app.route('/values')
+def values():
+    return render_template("values.html")
+
+@app.route('/logout')
+def logout():
+    # Add your logout logic later if needed
+    return redirect(url_for('login_signup'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
