@@ -1,88 +1,71 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const searchBtn = document.getElementById('search-btn');
-    const titleInput = document.getElementById('job-title');
-    const locationInput = document.getElementById('job-location');
-    const jobResults = document.getElementById('job-results');
-    const uploadBtn = document.getElementById('upload-btn');
-    const cvInput = document.getElementById('cv-input');
-    const cvPreview = document.getElementById('cv-preview');
-    const matchedJobsContainer = document.getElementById('matched-jobs');
+document.addEventListener('DOMContentLoaded', function () {
+  const searchButton = document.getElementById('search-jobs');
+  const matchButton = document.getElementById('match-jobs');
+  const jobResultsContainer = document.getElementById('job-results');
+  const matchedJobsContainer = document.getElementById('matched-jobs');
 
-    let cvText = '';
+  // Job Search via Adzuna API
+  if (searchButton) {
+    searchButton.addEventListener('click', async () => {
+      const title = document.getElementById('job-title').value;
+      const location = document.getElementById('job-location').value;
 
-    async function fetchJobs() {
-        const title = titleInput.value;
-        const location = locationInput.value;
+      jobResultsContainer.innerHTML = '<p>Loading jobs...</p>';
 
-        const res = await fetch(`/api/jobs?title=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}`);
-        const jobs = await res.json();
+      try {
+        const response = await fetch(`/api/jobs?title=${title}&location=${location}`);
+        const jobs = await response.json();
 
-        jobResults.innerHTML = '';
         if (jobs.length === 0) {
-            jobResults.innerHTML = '<p>No matching jobs found.</p>';
+          jobResultsContainer.innerHTML = '<p>No jobs found. Try adjusting filters.</p>';
         } else {
-            jobs.forEach(job => {
-                const jobCard = document.createElement('div');
-                jobCard.classList.add('job-card');
-                jobCard.innerHTML = `
-                    <h3>${job.title}</h3>
-                    <p><strong>Company:</strong> ${job.company}</p>
-                    <p><strong>Location:</strong> ${job.location}</p>
-                    <p><strong>Salary:</strong> £${job.salary_min || 'N/A'}</p>
-                    <p>${job.description.slice(0, 200)}...</p>
-                `;
-                jobResults.appendChild(jobCard);
-            });
+          jobResultsContainer.innerHTML = jobs.map(job => `
+            <div class="job-card">
+              <h3>${job.title}</h3>
+              <p><strong>Company:</strong> ${job.company || "Unknown"}</p>
+              <p><strong>Location:</strong> ${job.location}</p>
+              <p><strong>Salary:</strong> ${job.salary_min || "Not listed"}</p>
+              <p>${job.description.slice(0, 250)}...</p>
+            </div>
+          `).join('');
         }
-    }
+      } catch (error) {
+        jobResultsContainer.innerHTML = '<p>Error fetching jobs.</p>';
+        console.error(error);
+      }
+    });
+  }
 
-    async function uploadCV() {
-        const file = cvInput.files[0];
-        if (!file) return;
+  // Match CV against Jobs (dummy jobs + OpenAI)
+  if (matchButton) {
+    matchButton.addEventListener('click', async () => {
+      matchedJobsContainer.innerHTML = '<p>Matching CV to jobs...</p>';
 
-        const formData = new FormData();
-        formData.append('cv', file);
-
-        const res = await fetch('/upload_cv', {
-            method: 'POST',
-            body: formData
+      try {
+        const response = await fetch('/api/match_cv_jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cv_text: 'use_stored' }) // triggers backend use of stored CV
         });
 
-        const data = await res.json();
-        cvText = data.text;
-        cvPreview.textContent = cvText.slice(0, 1000);
-
-        fetchMatchedJobs();
-    }
-
-    async function fetchMatchedJobs() {
-        if (!cvText) return;
-
-        const res = await fetch('/api/match_cv_jobs', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cv_text: cvText })
-        });
-
-        const matches = await res.json();
-        matchedJobsContainer.innerHTML = '';
+        const matches = await response.json();
 
         if (matches.length === 0) {
-            matchedJobsContainer.innerHTML = '<p>No strong matches found.</p>';
+          matchedJobsContainer.innerHTML = '<p>No matched jobs found.</p>';
         } else {
-            matches.forEach(job => {
-                const matchCard = document.createElement('div');
-                matchCard.classList.add('match-card');
-                matchCard.innerHTML = `
-                    <h3>${job.title} - ${job.location}</h3>
-                    <p><strong>Match Score:</strong> ${job.match}</p>
-                    <p><strong>Reasons:</strong> ${job.reasons.join(', ')}</p>
-                `;
-                matchedJobsContainer.appendChild(matchCard);
-            });
+          matchedJobsContainer.innerHTML = matches.map(match => `
+            <div class="job-card">
+              <h3>${match.title} (${match.match}%)</h3>
+              <p><strong>Location:</strong> ${match.location}</p>
+              <p><strong>Top Match Reasons:</strong></p>
+              <ul>${match.reasons.map(reason => `<li>${reason}</li>`).join('')}</ul>
+            </div>
+          `).join('');
         }
-    }
-
-    searchBtn.addEventListener('click', fetchJobs);
-    uploadBtn.addEventListener('click', uploadCV);
+      } catch (error) {
+        matchedJobsContainer.innerHTML = '<p>Error matching CV to jobs.</p>';
+        console.error(error);
+      }
+    });
+  }
 });
