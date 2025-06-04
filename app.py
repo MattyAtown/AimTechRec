@@ -22,9 +22,58 @@ def home():
     
 @app.route('/live_jobs')
 def live_jobs():
-    adzuna_ok = bool(ADZUNA_APP_ID and ADZUNA_APP_KEY)
-    openai_ok = bool(OPENAI_API_KEY)
-    return render_template('live_jobs.html', adzuna_status=adzuna_ok, openai_status=openai_ok)
+    global cv_text_store
+
+    title = request.args.get('title', 'developer')
+    location = request.args.get('location', 'london')
+
+    url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what={title}&where={location}&content-type=application/json"
+    res = requests.get(url)
+
+    jobs = []
+    matched_jobs = []
+
+    if res.status_code == 200:
+        results = res.json().get('results', [])
+        for job in results:
+            title = job.get("title")
+            company = job.get("company", {}).get("display_name")
+            location = job.get("location", {}).get("display_name")
+            salary = job.get("salary_min") or "N/A"
+            description = job.get("description", "")
+
+            job_info = {
+                "title": title,
+                "location": location,
+                "salary": salary,
+                "description": description
+            }
+            jobs.append(job_info)
+
+            # Basic keyword matching
+            if cv_text_store:
+                match_score = score_cv_match(cv_text_store.lower(), description.lower())
+                if match_score > 1:
+                    matched_jobs.append({
+                        "title": title,
+                        "location": location,
+                        "salary": salary,
+                        "match_score": match_score
+                    })
+
+    return render_template("live_jobs.html", jobs=jobs, matched_jobs=matched_jobs)
+Add this helper function to your file (outside of the route functions):
+
+python
+Copy
+Edit
+def score_cv_match(cv, job_description):
+    keywords = [
+        "software", "programming", "html", "css", "javascript",
+        "angularjs", "python", "java", "oracle", "sql",
+        "dba", "analyst", "architect", "director"
+    ]
+    return sum(1 for kw in keywords if kw in cv and kw in job_description)
 
 @app.route('/login_signup')
 def login_signup():
