@@ -62,7 +62,7 @@ def live_jobs():
                     })
 
     return render_template("live_jobs.html", jobs=jobs, matched_jobs=matched_jobs)
-Add this helper function to your file (outside of the route functions):
+
 
 python
 Copy
@@ -189,7 +189,7 @@ def values():
 
 @app.route('/logout')
 def logout():
-    # Add your logout logic later if needed
+
     return redirect(url_for('login_signup'))
 
 from flask import render_template
