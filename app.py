@@ -29,6 +29,12 @@ def live_jobs():
                            adzuna_id=adzuna_id,
                            adzuna_key=adzuna_key,
                            openai_key=openai_key)
+    
+    @app.route('/live_jobs')
+def live_jobs():
+    adzuna_ok = bool(ADZUNA_APP_ID and ADZUNA_APP_KEY)
+    openai_ok = bool(OPENAI_API_KEY)
+    return render_template('live_jobs.html', adzuna_status=adzuna_ok, openai_status=openai_ok)
 
 @app.route('/login_signup')
 def login_signup():
