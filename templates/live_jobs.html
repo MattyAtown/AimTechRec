@@ -9,10 +9,20 @@
 <body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
     <!-- Banner -->
-    <div class="banner">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='{{ url_for('home') }}'" />
-        <h1 class="tech-banner-text">Job Boards are Boring – We AiM with Precision</h1>
+   <div class="banner-container">
+  <div class="banner-left">
+    <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" onclick="window.location.href='{{ url_for('home') }}'" />
+    <h1 class="tech-banner-text">Live Jobs</h1>
+  </div>
+  <div class="banner-right">
+    <div class="api-status">
+      <strong>API Services Enabled:</strong><br>
+      ADZUNA: {{ '✔️' if adzuna_status else '❌' }}<br>
+      OPENAI: {{ '✔️' if openai_status else '❌' }}
     </div>
+  </div>
+</div>
+
 
     <!-- Upload CV Section -->
     <div class="upload-section neon-box">
