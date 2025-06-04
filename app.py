@@ -19,16 +19,6 @@ cv_text_store = ""
 @app.route('/')
 def home():
     return render_template("index.html")
-
-@app.route('/live_jobs')
-def live_jobs():
-    adzuna_id = os.getenv("ADZUNA_APP_ID")
-    adzuna_key = os.getenv("ADZUNA_APP_KEY")
-    openai_key = os.getenv("OPENAI_API_KEY")
-    return render_template('live_jobs.html',
-                           adzuna_id=adzuna_id,
-                           adzuna_key=adzuna_key,
-                           openai_key=openai_key)
     
     @app.route('/live_jobs')
 def live_jobs():
