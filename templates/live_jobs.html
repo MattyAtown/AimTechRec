@@ -2,52 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Jobs - AiM Tech Rec</title>
+    <title>Live Jobs</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </head>
 <body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
-    <!-- Banner -->
-   <div class="banner-container">
-  <div class="banner-left">
-    <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" onclick="window.location.href='{{ url_for('home') }}'" />
-    <h1 class="tech-banner-text">Live Jobs</h1>
-  </div>
-  <div class="banner-right">
-    <div class="api-status">
-      <strong>API Services Enabled:</strong><br>
-      ADZUNA: {{ '✔️' if adzuna_status else '❌' }}<br>
-      OPENAI: {{ '✔️' if openai_status else '❌' }}
-    </div>
-  </div>
-</div>
-
-
-    <!-- Upload CV Section -->
-    <div class="upload-section neon-box">
-        <h2 class="tech-label">Upload Your CV</h2>
-        <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" />
-        <div id="cv-status" class="cv-status"></div>
-    </div>
-
-    <!-- Filter Section -->
-    <div class="filter-section neon-box">
-        <h2 class="tech-label">Search Jobs</h2>
-        <input type="text" id="job-title" placeholder="Job Title" class="tech-input"/>
-        <input type="text" id="location" placeholder="Location (e.g., London)" class="tech-input"/>
-        <button id="search-btn" class="neon-button">Search Jobs</button>
-    </div>
-
-    <!-- Job Results -->
-    <div id="results-container" class="results-container">
-        <div class="results-column neon-box">
-            <h3 class="tech-label">Search Results</h3>
-            <div id="search-results" class="job-results"></div>
+    <div class="banner-container">
+        <div class="banner-left">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='/'" />
+            <h1 class="tech-banner-text">Job Boards are Boring – We AiM with Precision</h1>
         </div>
-        <div class="results-column neon-box">
-            <h3 class="tech-label">Matched for You</h3>
-            <div id="matched-results" class="job-results"></div>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>Live Jobs</h2>
+            {% for job in jobs %}
+            <div class="result-card">
+                <strong>{{ job.title }}</strong><br>
+                Location: {{ job.location }}<br>
+                Salary: £{{ job.salary }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Matched for You</h2>
+            {% for match in matched_jobs %}
+            <div class="result-card">
+                <strong>{{ match.title }}</strong><br>
+                Location: {{ match.location }}<br>
+                Salary: £{{ match.salary }}<br>
+                Match Score: {{ match.match_score }}/14
+            </div>
+            {% endfor %}
         </div>
     </div>
 
