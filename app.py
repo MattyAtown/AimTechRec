@@ -22,8 +22,9 @@ def home():
 
 @app.route('/live_jobs')
 def live_jobs():
-    jobs = Job.query.order_by(Job.date_posted.desc()).all()
-    recommended = get_recommended_jobs_for_user(session.get('user_id'))
+    # jobs = Job.query.order_by(Job.date_posted.desc()).all()  # Disabled: Job model not defined
+    jobs = []  # Temporary empty list
+    recommended = []  # No recommendation logic yet
     return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
 
 @app.route('/login_signup')
