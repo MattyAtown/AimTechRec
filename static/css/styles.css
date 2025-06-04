@@ -97,3 +97,43 @@ button:hover {
     display: block;
     margin: 0 auto 10px auto;
 }
+
+/* Split banner layout for Live Jobs page */
+.banner-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.banner-left {
+    display: flex;
+    align-items: center;
+}
+
+.banner-left .logo {
+    height: 60px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.tech-banner-text {
+    font-size: 28px;
+    font-weight: bold;
+    color: #00ffff;
+    text-shadow: 0 0 8px #00ffff;
+}
+
+.banner-right .api-status {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 0 10px #00ffff33;
+}
