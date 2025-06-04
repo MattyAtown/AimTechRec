@@ -22,10 +22,13 @@ def home():
 
 @app.route('/live_jobs')
 def live_jobs():
-    # jobs = Job.query.order_by(Job.date_posted.desc()).all()  # Disabled: Job model not defined
-    jobs = []  # Temporary empty list
-    recommended = []  # No recommendation logic yet
-    return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
+    adzuna_id = os.getenv("ADZUNA_APP_ID")
+    adzuna_key = os.getenv("ADZUNA_APP_KEY")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    return render_template('live_jobs.html',
+                           adzuna_id=adzuna_id,
+                           adzuna_key=adzuna_key,
+                           openai_key=openai_key)
 
 @app.route('/login_signup')
 def login_signup():
