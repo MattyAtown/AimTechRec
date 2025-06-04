@@ -22,7 +22,9 @@ def home():
 
 @app.route('/live_jobs')
 def live_jobs():
-    return render_template("live_jobs.html")
+    jobs = Job.query.order_by(Job.date_posted.desc()).all()
+    recommended = get_recommended_jobs_for_user(session.get('user_id'))
+    return render_template('live_jobs.html', jobs=jobs, recommended=recommended)
 
 @app.route('/login_signup')
 def login_signup():
