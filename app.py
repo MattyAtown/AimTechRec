@@ -20,7 +20,7 @@ cv_text_store = ""
 def home():
     return render_template("index.html")
     
-    @app.route('/live_jobs')
+@app.route('/live_jobs')
 def live_jobs():
     adzuna_ok = bool(ADZUNA_APP_ID and ADZUNA_APP_KEY)
     openai_ok = bool(OPENAI_API_KEY)
