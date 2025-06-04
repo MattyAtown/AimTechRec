@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Live Jobs - AiM Tech Rec</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body style="background-image: url('/static/background.png'); background-size: cover;">
-    <div class="banner">
-        <img src="/static/logo.png" alt="Logo" class="logo" onclick="window.location.href='index.html'" />
-        <h1 class="tech-banner-text">Job Boards are Boring – We AiM with Precision</h1>
-    </div>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+<body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
+
+<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='{{ url_for('home') }}'" />
 
     <!-- Upload CV Section -->
     <div class="upload-section neon-box">
