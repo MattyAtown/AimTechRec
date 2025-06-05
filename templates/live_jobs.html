@@ -39,6 +39,35 @@
             {% endfor %}
         </div>
     </div>
+<div class="box">
+  <h2>Search Filters</h2>
+  <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
+  <input type="text" id="jobLocation" placeholder="Location or Postcode">
+  <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
+  <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
+  
+  <label>Company Benefits:</label>
+  <select multiple id="benefits">
+    <option>Bonus</option>
+    <option>Private Health</option>
+    <option>Staff Discount</option>
+    <option>Annual Pay Review</option>
+  </select>
 
+  <label>Working Arrangement:</label>
+  <select id="workType">
+    <option value="">Any</option>
+    <option value="Remote">Remote</option>
+    <option value="Office">Office Based</option>
+    <option value="Hybrid">Hybrid</option>
+  </select>
+
+  <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
+  
+  <button id="searchJobs">Search Jobs</button>
+  <input type="file" id="cvUpload">
+  <div id="cvStatus"></div>
+  <button id="matchBtn">Match CV to Jobs</button>
+</div>
 </body>
 </html>
