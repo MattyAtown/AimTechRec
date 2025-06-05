@@ -36,46 +36,23 @@ def live_jobs():
     if res.status_code == 200:
         results = res.json().get('results', [])
         for job in results:
-            title = job.get("title")
-            company = job.get("company", {}).get("display_name")
-            location = job.get("location", {}).get("display_name")
-            salary = job.get("salary_min") or "N/A"
-            description = job.get("description", "")
-
-            job_info = {
-                "title": title,
-                "location": location,
-                "salary": salary,
-                "description": description
+            job_data = {
+                "title": job.get("title", "N/A"),
+                "location": job.get("location", {}).get("display_name", "N/A"),
+                "salary": job.get("salary_min", "N/A"),
+                "description": job.get("description", "")
             }
-            jobs.append(job_info)
+            jobs.append(job_data)
 
-            # Basic keyword matching
             if cv_text_store:
-                match_score = score_cv_match(cv_text_store.lower(), description.lower())
-                if match_score > 1:
-                    matched_jobs.append({
-                        "title": title,
-                        "location": location,
-                        "salary": salary,
-                        "match_score": match_score
-                    })
+                match_score = score_cv_match(cv_text_store.lower(), job_data["description"].lower())
+                if match_score > 0:
+                    job_data["match_score"] = match_score
+                    matched_jobs.append(job_data)
 
-    return render_template("live_jobs.html", jobs=jobs, matched_jobs=matched_jobs)
+        matched_jobs = sorted(matched_jobs, key=lambda x: x["match_score"], reverse=True)
 
-
-python
-Copy
-Edit
-def score_cv_match(cv, job_description):
-    keywords = [
-        "software", "programming", "html", "css", "javascript",
-        "angularjs", "python", "java", "oracle", "sql",
-        "dba", "analyst", "architect", "director"
-    ]
-    return sum(1 for kw in keywords if kw in cv and kw in job_description)
-
-@app.route('/login_signup')
+    return render_template("live_jobs.html", jobs=jobs, matched_jobs=matched_jobs)@app.route('/login_signup')
 def login_signup():
     return render_template("login_signup.html")
 
@@ -197,6 +174,14 @@ from flask import render_template
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+def score_cv_match(cv, job_description):
+    keywords = [
+        "software", "programming", "html", "css", "javascript",
+        "angularjs", "python", "java", "oracle", "sql",
+        "dba", "analyst", "architect", "director"
+    ]
+    return sum(1 for kw in keywords if kw in cv and kw in job_description)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
