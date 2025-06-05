@@ -21,39 +21,44 @@ cv_text_store = ""
 def home():
     return render_template("index.html")
 
-@app.route('/live_jobs')
-def live_jobs():
-    global cv_text_store
-
-    title = request.args.get('title', 'developer')
+@app.route('/api/jobs')
+def search_jobs():
+    title = request.args.get('title', '')
     location = request.args.get('location', 'london')
+    min_salary = int(request.args.get('min_salary', 0))
+    ideal_salary = int(request.args.get('ideal_salary', 0))
+    work_type = request.args.get('work_type', '').lower()
+    exclude_companies = request.args.get('exclude_companies', '').split(',')
 
-    url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what={title}&where={location}&content-type=application/json"
+    url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=50&what={title}&where={location}&content-type=application/json"
     res = requests.get(url)
 
-    jobs = []
-    matched_jobs = []
-
+    filtered = []
     if res.status_code == 200:
-        results = res.json().get('results', [])
-        for job in results:
-            job_data = {
-                "title": job.get("title", "N/A"),
-                "location": job.get("location", {}).get("display_name", "N/A"),
-                "salary": job.get("salary_min", "N/A"),
-                "description": job.get("description", "")
-            }
-            jobs.append(job_data)
+        for job in res.json().get('results', []):
+            job_title = job.get("title", "")
+            company = job.get("company", {}).get("display_name", "")
+            salary = job.get("salary_min", 0)
+            description = job.get("description", "")
 
-            if cv_text_store:
-                match_score = score_cv_match(cv_text_store.lower(), job_data["description"].lower())
-                if match_score > 0:
-                    job_data["match_score"] = match_score
-                    matched_jobs.append(job_data)
+            # Filter rules
+            if salary < min_salary:
+                continue
+            if any(ex.lower() in company.lower() for ex in exclude_companies if ex):
+                continue
+            if work_type and work_type not in description.lower():
+                continue
 
-        matched_jobs = sorted(matched_jobs, key=lambda x: x["match_score"], reverse=True)
+            filtered.append({
+                "title": job_title,
+                "company": company,
+                "location": job.get("location", {}).get("display_name", ""),
+                "salary_min": salary,
+                "description": description
+            })
 
-    return render_template("live_jobs.html", jobs=jobs, matched_jobs=matched_jobs)
+    return jsonify(filtered[:50])
+
 
 @app.route('/login_signup')
 def login_signup():
