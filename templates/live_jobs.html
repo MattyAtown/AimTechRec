@@ -8,6 +8,7 @@
 </head>
 <body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
+    <!-- Banner -->
     <div class="banner-container">
         <div class="banner-left">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='/'" />
@@ -15,6 +16,7 @@
         </div>
     </div>
 
+    <!-- Filter Box -->
     <div class="box">
         <h2>Search Filters</h2>
         <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
@@ -38,16 +40,26 @@
             <option value="Hybrid">Hybrid</option>
         </select>
 
-        <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
+        <textarea id="excludeCompanies" placeholder="Companies to exclude (comma separated)"></textarea>
         
-        <button id="searchJobs">Search Jobs</button>
+        <button onclick="searchJobs()">Search Jobs</button>
         <input type="file" id="cvUpload">
         <div id="cvStatus"></div>
-        <button id="matchBtn">Match CV to Jobs</button>
+        <button onclick="matchCV()">Match CV to Jobs</button>
     </div>
 
-    <!-- 🔽 Job Results will be dynamically inserted here -->
-    <div id="results"></div>
+    <!-- Results -->
+    <div class="container">
+        <div class="box" id="liveJobsBox">
+            <h2>Live Jobs</h2>
+            <div id="liveJobsList">Loading...</div>
+        </div>
+
+        <div class="box" id="matchedJobsBox">
+            <h2>Matched for You</h2>
+            <div id="matchedJobsList">Upload your CV and search to see matches.</div>
+        </div>
+    </div>
 
 </body>
 </html>
