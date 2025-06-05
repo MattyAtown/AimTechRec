@@ -22,7 +22,7 @@ def home():
 
 @app.route('/live_jobs')
 def live_jobs():
-    return render_template("live_jobs.html")
+    return render_template("live_jobs.html", jobs=[], matched_jobs=[])
 
 @app.route('/login_signup')
 def login_signup():
@@ -127,7 +127,6 @@ def match_jobs():
             })
 
     return jsonify(matches)
-    ]
 
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
