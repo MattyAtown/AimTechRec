@@ -75,6 +75,11 @@ document.addEventListener("DOMContentLoaded", function () {
     rightBox.className = "right-box";
     rightBox.innerHTML = "<h3>Matched for You</h3>";
 
+    const data = await res.json();
+    uploadedCVText = data.text;
+    console.log("Uploaded CV Text:", uploadedCVText);
+    cvStatus.textContent = "✅ CV Uploaded";
+
     if (jobs.length === 0) {
       leftBox.innerHTML += "<p>No jobs found.</p>";
     } else {
