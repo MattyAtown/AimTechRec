@@ -41,7 +41,6 @@ def cv_storage_success():
     return render_template("cv_storage_success.html")
 
 from werkzeug.utils import secure_filename
-import docx2txt
 
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
