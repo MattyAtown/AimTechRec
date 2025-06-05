@@ -11,6 +11,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const location = document.getElementById("jobLocation").value;
 
     const res = await fetch(`/api/jobs?title=${title}&location=${location}`);
+    const title = document.getElementById("jobTitle").value;
+    const location = document.getElementById("jobLocation").value;
+    const minSalary = document.getElementById("minSalary").value;
+    const idealSalary = document.getElementById("idealSalary").value;
+    const workType = document.getElementById("workType").value;
+    const benefits = Array.from(document.getElementById("benefits").selectedOptions).map(opt => opt.value);
+    const exclude = document.getElementById("excludeCompanies").value;
+
+    const query = new URLSearchParams({
+    title,
+    location,
+    min_salary: minSalary,
+    ideal_salary: idealSalary,
+    work_type: workType,
+    benefits: benefits.join(','),
+    exclude_companies: exclude
+}).toString();
+
+    const res = await fetch(`/api/jobs?${query}`);
     const jobs = await res.json();
     renderResults(jobs, []);
   });
