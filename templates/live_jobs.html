@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Live Jobs</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}" defer></script>
 </head>
 <body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
@@ -15,8 +15,7 @@
         </div>
     </div>
 
-    <!-- Search Filter Box -->
-    <div class="box" style="margin: 2rem;">
+    <div class="box">
         <h2>Search Filters</h2>
         <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
         <input type="text" id="jobLocation" placeholder="Location or Postcode">
@@ -41,40 +40,14 @@
 
         <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
         
+        <button id="searchJobs">Search Jobs</button>
         <input type="file" id="cvUpload">
         <div id="cvStatus"></div>
-
-        <button id="searchJobs">Search Jobs</button>
         <button id="matchBtn">Match CV to Jobs</button>
     </div>
 
-    <!-- Results Section -->
-    <div class="container">
-        <!-- Live Jobs -->
-        <div class="box" style="max-height: 500px; overflow-y: scroll;">
-            <h2>Live Jobs</h2>
-            {% for job in jobs %}
-            <div class="result-card" onclick="promptApply('{{ job.title }}', '{{ job.location }}')">
-                <strong>{{ job.title }}</strong><br>
-                Location: {{ job.location }}<br>
-                Salary: £{{ job.salary }}
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Matched Jobs -->
-        <div class="box" style="max-height: 500px; overflow-y: scroll;">
-            <h2>Matched for You</h2>
-            {% for match in matched_jobs %}
-            <div class="result-card" onclick="promptApply('{{ match.title }}', '{{ match.location }}')">
-                <strong>{{ match.title }}</strong><br>
-                Location: {{ match.location }}<br>
-                Salary: £{{ match.salary }}<br>
-                Match Score: {{ ((match.match_score / 14.0) * 100)|round(0) }}%
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+    <!-- 🔽 Job Results will be dynamically inserted here -->
+    <div id="results"></div>
 
 </body>
 </html>
