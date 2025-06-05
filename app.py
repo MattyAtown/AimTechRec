@@ -40,12 +40,22 @@ def dashboard():
 def cv_storage_success():
     return render_template("cv_storage_success.html")
 
+from werkzeug.utils import secure_filename
+import docx2txt
+
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
     global cv_text_store
     file = request.files['cv']
     if file:
-        text = extract_text_from_pdf(file)
+        filename = secure_filename(file.filename)
+        if filename.endswith(".pdf"):
+            text = extract_text_from_pdf(file)
+        elif filename.endswith(".docx"):
+            text = docx2txt.process(file)
+        else:
+            return jsonify({"error": "Unsupported file type"}), 400
+
         cv_text_store = text
         return jsonify({"text": text})
     return jsonify({"error": "No file uploaded"}), 400
@@ -76,36 +86,48 @@ def match_jobs():
     if not user_cv:
         return jsonify([])
 
-    dummy_jobs = [
-        {"title": "Software Engineer", "location": "London", "description": "We are looking for a Python developer with Flask experience."},
-        {"title": "Data Analyst", "location": "Manchester", "description": "Strong skills in SQL and data visualization."},
-        {"title": "DevOps Engineer", "location": "Remote", "description": "Experience with CI/CD pipelines and AWS required."}
-    ]
+    # Fetch jobs from Adzuna
+    url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what=developer&where=london&content-type=application/json"
+    res = requests.get(url)
 
+    if res.status_code != 200:
+        return jsonify([])
+
+    jobs = res.json().get('results', [])
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     matches = []
-    for job in dummy_jobs:
-        prompt = f"Compare this CV:\n{user_cv[:2000]}\n\nWith this job description:\n{job['description']}\n\nHow strong is the match from 0-100? Give reasons."
+
+    for job in jobs:
+        description = job.get("description", "")
+        prompt = f"Compare the following CV with this job description and give a match score out of 100 with 1-2 sentences of reasoning:\n\nCV:\n{user_cv[:2000]}\n\nJob:\n{description[:1000]}"
+
         response = requests.post("https://api.openai.com/v1/chat/completions",
-                                 headers=headers,
-                                 json={
-                                     "model": "gpt-4",
-                                     "messages": [
-                                         {"role": "system", "content": "You are a CV-job matching assistant."},
-                                         {"role": "user", "content": prompt}
-                                     ]
-                                 })
+            headers=headers,
+            json={
+                "model": "gpt-4",
+                "messages": [
+                    {"role": "system", "content": "You are a CV-job matching assistant."},
+                    {"role": "user", "content": prompt}
+                ]
+            }
+        )
+
         if response.status_code == 200:
             content = response.json()['choices'][0]['message']['content']
-            score = extract_score_from_response(content)
-            reasons = extract_reasons(content)
+            import re
+            score_match = re.search(r'(\d{1,3})', content)
+            score = int(score_match.group(1)) if score_match else 0
+
             matches.append({
-                "title": job['title'],
-                "location": job['location'],
+                "title": job.get("title", "N/A"),
+                "location": job.get("location", {}).get("display_name", "N/A"),
+                "salary": job.get("salary_min", "N/A"),
                 "match": score,
-                "reasons": reasons
+                "reason": content
             })
+
     return jsonify(matches)
+    ]
 
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
