@@ -7,48 +7,61 @@ document.addEventListener("DOMContentLoaded", function () {
   let uploadedCVText = "";
 
   searchBtn.addEventListener("click", async () => {
-    const title = document.getElementById("jobTitle").value;
-    const location = document.getElementById("jobLocation").value;
+  const title = document.getElementById("jobTitle").value;
+  const location = document.getElementById("jobLocation").value;
+  const minSalary = document.getElementById("minSalary").value;
+  const workType = document.getElementById("workType").value;
+  const excludeCompanies = document.getElementById("excludeCompanies").value;
 
-    const res = await fetch(`/api/jobs?title=${title}&location=${location}`);
-    const jobs = await res.json();
-    renderResults(jobs, []);
+  const query = new URLSearchParams({
+  title,
+  location,
+  min_salary: minSalary,
+  work_type: workType,
+  exclude_companies: excludeCompanies
+  }).toString();
+
+  const res = await fetch(`/api/jobs?${query}`);
+
+  const res = await fetch(`/api/jobs?title=${title}&location=${location}`);
+  const jobs = await res.json();
+  renderResults(jobs, []);
   });
 
   fileInput.addEventListener("change", async () => {
-    const file = fileInput.files[0];
-    if (!file) return;
+  const file = fileInput.files[0];
+  if (!file) return;
 
-    const formData = new FormData();
-    formData.append("cv", file);
+  const formData = new FormData();
+  formData.append("cv", file);
 
-    const res = await fetch("/upload_cv", {
-      method: "POST",
-      body: formData,
+  const res = await fetch("/upload_cv", {
+    method: "POST",
+    body: formData,
     });
 
-    const data = await res.json();
-    uploadedCVText = data.text;
-    cvStatus.textContent = "✅ CV Uploaded";
+  const data = await res.json();
+  uploadedCVText = data.text;
+  cvStatus.textContent = "✅ CV Uploaded";
   });
 
   matchBtn.addEventListener("click", async () => {
-    if (!uploadedCVText) {
-      alert("Upload your CV first.");
-      return;
-    }
+  if (!uploadedCVText) {
+    alert("Upload your CV first.");
+  return;
+  }
 
-    const res = await fetch("/api/match_cv_jobs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cv_text: uploadedCVText }),
+  const res = await fetch("/api/match_cv_jobs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ cv_text: uploadedCVText }),
     });
 
     const matches = await res.json();
     renderResults([], matches);
-  });
+    });
 
-  function renderResults(jobs, matches) {
+    function renderResults(jobs, matches) {
     resultsDiv.innerHTML = "";
 
     const container = document.createElement("div");
