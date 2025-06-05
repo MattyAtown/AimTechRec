@@ -15,11 +15,46 @@
         </div>
     </div>
 
+    <!-- Search Filter Box -->
+    <div class="box" style="margin: 2rem;">
+        <h2>Search Filters</h2>
+        <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
+        <input type="text" id="jobLocation" placeholder="Location or Postcode">
+        <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
+        <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
+        
+        <label>Company Benefits:</label>
+        <select multiple id="benefits">
+            <option>Bonus</option>
+            <option>Private Health</option>
+            <option>Staff Discount</option>
+            <option>Annual Pay Review</option>
+        </select>
+
+        <label>Working Arrangement:</label>
+        <select id="workType">
+            <option value="">Any</option>
+            <option value="Remote">Remote</option>
+            <option value="Office">Office Based</option>
+            <option value="Hybrid">Hybrid</option>
+        </select>
+
+        <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
+        
+        <input type="file" id="cvUpload">
+        <div id="cvStatus"></div>
+
+        <button id="searchJobs">Search Jobs</button>
+        <button id="matchBtn">Match CV to Jobs</button>
+    </div>
+
+    <!-- Results Section -->
     <div class="container">
-        <div class="box">
+        <!-- Live Jobs -->
+        <div class="box" style="max-height: 500px; overflow-y: scroll;">
             <h2>Live Jobs</h2>
             {% for job in jobs %}
-            <div class="result-card">
+            <div class="result-card" onclick="promptApply('{{ job.title }}', '{{ job.location }}')">
                 <strong>{{ job.title }}</strong><br>
                 Location: {{ job.location }}<br>
                 Salary: £{{ job.salary }}
@@ -27,47 +62,19 @@
             {% endfor %}
         </div>
 
-        <div class="box">
+        <!-- Matched Jobs -->
+        <div class="box" style="max-height: 500px; overflow-y: scroll;">
             <h2>Matched for You</h2>
             {% for match in matched_jobs %}
-            <div class="result-card">
+            <div class="result-card" onclick="promptApply('{{ match.title }}', '{{ match.location }}')">
                 <strong>{{ match.title }}</strong><br>
                 Location: {{ match.location }}<br>
                 Salary: £{{ match.salary }}<br>
-                Match Score: {{ match.match_score }}/14
+                Match Score: {{ ((match.match_score / 14.0) * 100)|round(0) }}%
             </div>
             {% endfor %}
         </div>
     </div>
-<div class="box">
-  <h2>Search Filters</h2>
-  <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
-  <input type="text" id="jobLocation" placeholder="Location or Postcode">
-  <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
-  <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
-  
-  <label>Company Benefits:</label>
-  <select multiple id="benefits">
-    <option>Bonus</option>
-    <option>Private Health</option>
-    <option>Staff Discount</option>
-    <option>Annual Pay Review</option>
-  </select>
 
-  <label>Working Arrangement:</label>
-  <select id="workType">
-    <option value="">Any</option>
-    <option value="Remote">Remote</option>
-    <option value="Office">Office Based</option>
-    <option value="Hybrid">Hybrid</option>
-  </select>
-
-  <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
-  
-  <button id="searchJobs">Search Jobs</button>
-  <input type="file" id="cvUpload">
-  <div id="cvStatus"></div>
-  <button id="matchBtn">Match CV to Jobs</button>
-</div>
 </body>
 </html>
