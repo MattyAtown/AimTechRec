@@ -72,3 +72,101 @@ a:hover {
     color: #39ff14;
     text-shadow: 0 0 5px #39ff14;
 }
+
+
+/* --- AIM ENHANCEMENTS --- */
+
+.logo {
+    height: 60px;
+    width: auto;
+    display: block;
+    margin: 0 auto 20px auto;
+    cursor: pointer;
+}
+
+.filter-section {
+    background-color: rgba(0, 0, 0, 0.7);
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    box-shadow: 0 0 12px #00ffcc;
+}
+
+.filter-section input,
+.filter-section select,
+.filter-section textarea,
+.filter-section button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #00ffcc;
+    border: 1px solid #00ffcc;
+    font-size: 16px;
+}
+
+.filter-section button {
+    background-color: rgba(0, 255, 204, 0.2);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.filter-section button:hover {
+    background-color: rgba(0, 255, 204, 0.4);
+    color: #000;
+    box-shadow: 0 0 10px #00ffcc;
+}
+
+.result-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 20px;
+    flex-wrap: wrap;
+}
+
+.left-box, .right-box {
+    background-color: rgba(20, 20, 20, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    width: 45%;
+    box-shadow: 0 0 10px #00ffcc;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.left-box h2, .right-box h2 {
+    color: #00ffcc;
+    border-bottom: 1px solid #00ffcc;
+    padding-bottom: 10px;
+}
+
+.result-card, .job-box, .match-box {
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid #00ffcc;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 5px #00ffcc;
+}
+
+.banner-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.tech-banner-text {
+    font-size: 28px;
+    font-weight: bold;
+    color: #00ffff;
+    text-shadow: 0 0 8px #00ffff;
+}
