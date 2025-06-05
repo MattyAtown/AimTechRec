@@ -101,7 +101,6 @@ def search_jobs():
             salary = job.get("salary_min", 0)
             description = job.get("description", "")
 
-            # Filter rules
             if salary < min_salary:
                 continue
             if any(ex.lower() in company.lower() for ex in exclude_companies if ex):
@@ -118,8 +117,7 @@ def search_jobs():
             })
 
     return jsonify(filtered[:50])
-
-
+    
 @app.route('/services')
 def services():
     return render_template("services.html")
