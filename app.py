@@ -1,9 +1,13 @@
+
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_cors import CORS
 import requests
 import os
 import fitz  # PyMuPDF
 import openai
+from werkzeug.utils import secure_filename
+import docx2txt
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -40,8 +44,6 @@ def dashboard():
 def cv_storage_success():
     return render_template("cv_storage_success.html")
 
-from werkzeug.utils import secure_filename
-
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
     global cv_text_store
@@ -54,7 +56,6 @@ def upload_cv():
             text = docx2txt.process(file)
         else:
             return jsonify({"error": "Unsupported file type"}), 400
-
         cv_text_store = text
         return jsonify({"text": text})
     return jsonify({"error": "No file uploaded"}), 400
@@ -63,7 +64,6 @@ def upload_cv():
 def search_jobs():
     title = request.args.get('title', '')
     location = request.args.get('location', 'london')
-
     url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what={title}&where={location}&content-type=application/json"
     res = requests.get(url)
     if res.status_code == 200:
@@ -85,10 +85,8 @@ def match_jobs():
     if not user_cv:
         return jsonify([])
 
-    # Fetch jobs from Adzuna
     url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what=developer&where=london&content-type=application/json"
     res = requests.get(url)
-
     if res.status_code != 200:
         return jsonify([])
 
@@ -99,7 +97,6 @@ def match_jobs():
     for job in jobs:
         description = job.get("description", "")
         prompt = f"Compare the following CV with this job description and give a match score out of 100 with 1-2 sentences of reasoning:\n\nCV:\n{user_cv[:2000]}\n\nJob:\n{description[:1000]}"
-
         response = requests.post("https://api.openai.com/v1/chat/completions",
             headers=headers,
             json={
@@ -110,13 +107,10 @@ def match_jobs():
                 ]
             }
         )
-
         if response.status_code == 200:
             content = response.json()['choices'][0]['message']['content']
-            import re
             score_match = re.search(r'(\d{1,3})', content)
             score = int(score_match.group(1)) if score_match else 0
-
             matches.append({
                 "title": job.get("title", "N/A"),
                 "location": job.get("location", {}).get("display_name", "N/A"),
@@ -124,26 +118,12 @@ def match_jobs():
                 "match": score,
                 "reason": content
             })
-
     return jsonify(matches)
 
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
-    text = "\n".join(page.get_text() for page in doc)
-    return text
+    return "\n".join(page.get_text() for page in doc)
 
-def extract_score_from_response(text):
-    import re
-    match = re.search(r'(\d{1,3})', text)
-    if match:
-        score = int(match.group(1))
-        return min(score, 100)
-    return 0
-
-def extract_reasons(text):
-    lines = text.split("\n")
-    reasons = [line.strip("- ") for line in lines if "match" in line.lower() or "because" in line.lower()]
-    return reasons[:3] if reasons else ["See description"]
 @app.route('/services')
 def services():
     return render_template("services.html")
@@ -158,10 +138,7 @@ def values():
 
 @app.route('/logout')
 def logout():
-    # Add your logout logic later if needed
     return redirect(url_for('login_signup'))
-
-from flask import render_template
 
 @app.errorhandler(404)
 def page_not_found(e):
