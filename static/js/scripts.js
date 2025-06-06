@@ -3,25 +3,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const matchBtn = document.getElementById("matchBtn");
   const fileInput = document.getElementById("cvUpload");
   const cvStatus = document.getElementById("cvStatus");
-  const allJobsDiv = document.getElementById("allJobs");
-  const matchedJobsDiv = document.getElementById("matchedJobs");
-
+  const allJobs = document.getElementById("allJobs");
+  const matchedJobs = document.getElementById("matchedJobs");
   let uploadedCVText = "";
 
   searchBtn.addEventListener("click", async () => {
     const title = document.getElementById("jobTitle").value;
     const location = document.getElementById("jobLocation").value;
+
     const res = await fetch(`/api/jobs?title=${title}&location=${location}`);
     const jobs = await res.json();
-
-    allJobsDiv.innerHTML = jobs.length
-      ? jobs.map(job => `
-        <div class="job-box">
-          <strong>${job.title}</strong><br>
-          Location: ${job.location}<br>
-          Salary: £${job.salary_min || "Not listed"}
-        </div>`).join('')
-      : "<p>No jobs found.</p>";
+    allJobs.innerHTML = jobs.map(job =>
+      `<div class='job-box'>
+        <h4>${job.title}</h4>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Salary:</strong> £${job.salary_min || "Not listed"}</p>
+      </div>`
+    ).join('');
   });
 
   fileInput.addEventListener("change", async () => {
@@ -43,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   matchBtn.addEventListener("click", async () => {
     if (!uploadedCVText) {
-      alert("Please upload a CV first.");
+      alert("Upload your CV first.");
       return;
     }
 
@@ -54,15 +52,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const matches = await res.json();
-
-    matchedJobsDiv.innerHTML = matches.length
-      ? matches.map(match => `
-        <div class="match-box">
-          <strong>${match.title}</strong><br>
-          Location: ${match.location}<br>
-          Salary: £${match.salary || "Not listed"}<br>
-          Match: ${match.match}%
-        </div>`).join('')
-      : "<p>No matched jobs found.</p>";
+    matchedJobs.innerHTML = matches.map(match =>
+      `<div class='match-box'>
+        <h4>${match.title}</h4>
+        <p><strong>Location:</strong> ${match.location}</p>
+        <p><strong>Match:</strong> ${match.match}%</p>
+      </div>`
+    ).join('');
   });
 });
