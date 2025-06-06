@@ -3,13 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Job Hunter 🎯</title>
+    <title>Job Hunter 🎯/title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </head>
 <body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
-    <!-- Banner with Logo and Title -->
     <div class="banner-container">
         <div class="banner-left">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='/'" />
@@ -17,63 +16,48 @@
         </div>
     </div>
 
-    <!-- Search Filters -->
-    <div class="box">
-        <h2>Your Job Selection Criteria</h2>
-        <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
-        <input type="text" id="jobLocation" placeholder="Location or Postcode">
-        <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
-        <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
+    <div class="container">
+        <!-- Box 1: Search Criteria and CV Upload -->
+        <div class="box aim-box">
+            <h2>Your Job Selection Criteria</h2>
+            <input type="text" id="jobTitle" placeholder="Job Title (e.g. Software Developer)">
+            <input type="text" id="jobLocation" placeholder="Location or Postcode">
+            <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
+            <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
+            <label>Company Benefits:</label>
+            <select multiple id="benefits">
+                <option>Bonus</option>
+                <option>Private Health</option>
+                <option>Staff Discount</option>
+                <option>Annual Pay Review</option>
+            </select>
+            <label>Working Arrangement:</label>
+            <select id="workType">
+                <option value="">Any</option>
+                <option value="Remote">Remote</option>
+                <option value="Office">Office Based</option>
+                <option value="Hybrid">Hybrid</option>
+            </select>
+            <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
+            <input type="file" id="cvUpload">
+            <div id="cvStatus"></div>
+            <div class="button-group">
+                <button id="searchJobs">View Live Jobs</button>
+                <button id="matchBtn">Match CV to Jobs</button>
+            </div>
+        </div>
 
-        <label>Company Benefits:</label>
-        <select multiple id="benefits">
-            <option>Bonus</option>
-            <option>Private Health</option>
-            <option>Staff Discount</option>
-            <option>Annual Pay Review</option>
-        </select>
-
-        <label>Working Arrangement:</label>
-        <select id="workType">
-            <option value="">Any</option>
-            <option value="Remote">Remote</option>
-            <option value="Office">Office Based</option>
-            <option value="Hybrid">Hybrid</option>
-        </select>
-
-        <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
-
-        <input type="file" id="cvUpload">
-        <div id="cvStatus"></div>
-        <button id="matchBtn">Match CV to Jobs</button>
-        <button id="searchJobs">View Live Jobs</button>
-    </div>
-
-    <!-- Results -->
-    <div class="result-container">
-        <div class="left-box">
-            <h2>Live Jobs</h2>
+        <!-- Box 2: Live Jobs Results -->
+        <div class="box aim-box">
+            <h2>Live Job Listings</h2>
             <div id="allJobs">No jobs loaded yet...</div>
         </div>
-        <div class="right-box">
-            <h2>Matched for You</h2>
+
+        <!-- Box 3: Matched Jobs from CV -->
+        <div class="box aim-box">
+            <h2>Jobs Matched For You</h2>
             <div id="matchedJobs">No matched jobs yet...</div>
         </div>
     </div>
-
-    <!-- Job Popup Modal -->
-    <div id="jobModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span id="closeModal" class="close">&times;</span>
-            <h3>Full Job Description</h3>
-            <div id="jobDetailsText"></div>
-            <form id="shortlistForm">
-                <label><input type="checkbox" id="confirmShortlist"> Yes, I want to be shortlisted</label><br>
-                <button type="submit">Submit</button>
-            </form>
-            <div id="shortlistMsg"></div>
-        </div>
-    </div>
-
 </body>
 </html>
