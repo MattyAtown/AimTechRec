@@ -3,24 +3,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Job Hunter 🎯/title>
+    <title>Job Hunter 🎯</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <style>
+        .banner-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            height: 60px;
+            cursor: pointer;
+        }
+        .page-title {
+            color: #00ffff;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
+            margin-right: 60px;
+        }
+        .aim-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 0 10px #00ffff;
+        }
+        .result-card {
+            background-color: #1c1c1c;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .result-card:hover {
+            background-color: #2d2d2d;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+        }
+        .modal-content button {
+            margin: 10px;
+        }
+    </style>
 </head>
 <body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
-
     <div class="banner-container">
-        <div class="banner-left">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='/'" />
-            <h1 class="tech-banner-text">🎯 Job Hunter</h1>
-        </div>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='/'">
+        <div class="page-title">🎯 Job Hunter</div>
     </div>
 
     <div class="container">
-        <!-- Box 1: Search Criteria and CV Upload -->
-        <div class="box aim-box">
+        <div class="aim-box">
             <h2>Your Job Selection Criteria</h2>
-            <input type="text" id="jobTitle" placeholder="Job Title (e.g. Software Developer)">
+            <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
             <input type="text" id="jobLocation" placeholder="Location or Postcode">
             <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
             <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
@@ -38,26 +99,48 @@
                 <option value="Office">Office Based</option>
                 <option value="Hybrid">Hybrid</option>
             </select>
-            <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
+            <textarea id="excludeCompanies" placeholder="Companies to exclude..."></textarea>
             <input type="file" id="cvUpload">
+            <button id="searchJobs">View Live Jobs</button>
+            <button id="matchBtn">Match CV to Jobs</button>
             <div id="cvStatus"></div>
-            <div class="button-group">
-                <button id="searchJobs">View Live Jobs</button>
-                <button id="matchBtn">Match CV to Jobs</button>
-            </div>
         </div>
 
-        <!-- Box 2: Live Jobs Results -->
-        <div class="box aim-box">
-            <h2>Live Job Listings</h2>
+        <div class="aim-box">
+            <h2>Live Jobs</h2>
             <div id="allJobs">No jobs loaded yet...</div>
         </div>
 
-        <!-- Box 3: Matched Jobs from CV -->
-        <div class="box aim-box">
-            <h2>Jobs Matched For You</h2>
+        <div class="aim-box">
+            <h2>Matched For You</h2>
             <div id="matchedJobs">No matched jobs yet...</div>
         </div>
     </div>
+
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <h3>See full job description and apply?</h3>
+            <label><input type="checkbox" id="applyConfirm"> Yes, shortlist me</label><br>
+            <button onclick="submitApplication()">Submit</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("jobModal").style.display = "flex";
+        }
+        function closeModal() {
+            document.getElementById("jobModal").style.display = "none";
+        }
+        function submitApplication() {
+            if (document.getElementById("applyConfirm").checked) {
+                alert("✅ Your CV has been shortlisted. We’ll be in touch shortly.");
+                closeModal();
+            } else {
+                alert("❌ Please tick the box to confirm.");
+            }
+        }
+    </script>
 </body>
 </html>
