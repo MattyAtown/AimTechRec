@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </head>
-<body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
+<body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
     <div class="banner-container">
         <div class="banner-left">
@@ -16,16 +16,14 @@
         </div>
     </div>
 
-    <div class="container box" style="margin-top: 20px;">
-        <h2>Your Job Selection Criteria</h2>
-        <div class="form-group">
+    <div class="container">
+        <!-- Box 1: Search Criteria and CV Upload -->
+        <div class="box aim-box">
+            <h2>Your Job Selection Criteria</h2>
             <input type="text" id="jobTitle" placeholder="Job Title (e.g. Software Developer)">
             <input type="text" id="jobLocation" placeholder="Location or Postcode">
             <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
             <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
-        </div>
-
-        <div class="form-group">
             <label>Company Benefits:</label>
             <select multiple id="benefits">
                 <option>Bonus</option>
@@ -33,7 +31,6 @@
                 <option>Staff Discount</option>
                 <option>Annual Pay Review</option>
             </select>
-
             <label>Working Arrangement:</label>
             <select id="workType">
                 <option value="">Any</option>
@@ -41,26 +38,24 @@
                 <option value="Office">Office Based</option>
                 <option value="Hybrid">Hybrid</option>
             </select>
-
-            <textarea id="excludeCompanies" placeholder="Exclude Companies (comma-separated)"></textarea>
-        </div>
-
-        <div class="form-group">
+            <textarea id="excludeCompanies" placeholder="Companies you do NOT want to see (comma separated)"></textarea>
             <input type="file" id="cvUpload">
-            <span id="cvStatus">No CV uploaded.</span>
-            <br>
-            <button id="matchBtn">Match CV to Jobs</button>
-            <button id="searchJobs">View Live Jobs</button>
+            <div id="cvStatus"></div>
+            <div class="button-group">
+                <button id="searchJobs">View Live Jobs</button>
+                <button id="matchBtn">Match CV to Jobs</button>
+            </div>
         </div>
-    </div>
 
-    <div class="result-container">
-        <div class="left-box">
-            <h2>All Jobs</h2>
+        <!-- Box 2: Live Jobs Results -->
+        <div class="box aim-box">
+            <h2>Live Job Listings</h2>
             <div id="allJobs">No jobs loaded yet...</div>
         </div>
-        <div class="right-box">
-            <h2>Matched For You</h2>
+
+        <!-- Box 3: Matched Jobs from CV -->
+        <div class="box aim-box">
+            <h2>Jobs Matched For You</h2>
             <div id="matchedJobs">No matched jobs yet...</div>
         </div>
     </div>
