@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const matchBtn = document.getElementById("matchBtn");
   const fileInput = document.getElementById("cvUpload");
   const cvStatus = document.getElementById("cvStatus");
-  const allJobs = document.getElementById("allJobs");
-  const matchedJobs = document.getElementById("matchedJobs");
+  const resultsDiv = document.getElementById("results");
   let uploadedCVText = "";
 
   searchBtn.addEventListener("click", async () => {
@@ -13,13 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const res = await fetch(`/api/jobs?title=${title}&location=${location}`);
     const jobs = await res.json();
-    allJobs.innerHTML = jobs.map(job =>
-      `<div class='job-box'>
-        <h4>${job.title}</h4>
-        <p><strong>Location:</strong> ${job.location}</p>
-        <p><strong>Salary:</strong> £${job.salary_min || "Not listed"}</p>
-      </div>`
-    ).join('');
+    renderResults(jobs, []);
   });
 
   fileInput.addEventListener("change", async () => {
@@ -52,12 +45,53 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const matches = await res.json();
-    matchedJobs.innerHTML = matches.map(match =>
-      `<div class='match-box'>
-        <h4>${match.title}</h4>
-        <p><strong>Location:</strong> ${match.location}</p>
-        <p><strong>Match:</strong> ${match.match}%</p>
-      </div>`
-    ).join('');
+    renderResults([], matches);
   });
+
+  function renderResults(jobs, matches) {
+    resultsDiv.innerHTML = "";
+
+    const container = document.createElement("div");
+    container.className = "result-container";
+
+    const leftBox = document.createElement("div");
+    leftBox.className = "left-box";
+    leftBox.innerHTML = "<h3>Job Listings</h3>";
+
+    const rightBox = document.createElement("div");
+    rightBox.className = "right-box";
+    rightBox.innerHTML = "<h3>Matched for You</h3>";
+
+    if (jobs.length === 0) {
+      leftBox.innerHTML += "<p>No jobs found.</p>";
+    } else {
+      jobs.forEach((job) => {
+        leftBox.innerHTML += `
+          <div class="job-box">
+            <h4>${job.title}</h4>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Salary:</strong> £${job.salary_min || "Not listed"}</p>
+            <a href="#">See More</a>
+          </div>`;
+      });
+    }
+
+    if (matches.length === 0) {
+      rightBox.innerHTML += "<p>No matched jobs found.</p>";
+    } else {
+      matches.forEach((match) => {
+        rightBox.innerHTML += `
+          <div class="match-box">
+            <h4>${match.title}</h4>
+            <p><strong>Location:</strong> ${match.location}</p>
+            <p><strong>Match:</strong> ${match.match}%</p>
+            <a href="#">Apply</a>
+          </div>`;
+      });
+    }
+
+    container.appendChild(leftBox);
+    container.appendChild(rightBox);
+    resultsDiv.appendChild(container);
+  }
 });
