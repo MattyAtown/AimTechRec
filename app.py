@@ -107,7 +107,7 @@ def cv_dr():
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-4",
-                    messages=[0]
+                    messages=[0],
                         {"role": "system", "content": "You are a professional CV reviewer."},
                    {"role": "user", "content": f"Please review this CV and provide feedback:\n\n{text}"})
             
