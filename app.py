@@ -147,6 +147,16 @@ from flask import render_template
 def page_not_found(e):
     return render_template('404.html'), 404
 
+@app.route('/shortlist', methods=['POST'])
+def shortlist():
+    data = request.json
+    title = data.get("title")
+    location = data.get("location")
+    company = data.get("company")
+    print(f"Shortlist Request: {title} at {company} in {location}")
+    # (Later) Add email logic here to send CV to jobs@aimtechrec.com
+    return jsonify({"message": "Shortlist request received."})
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
