@@ -1,69 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Uploaded - AiM Technology</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-    <style>
-        body {
-            background-image: url('/static/images/background.png');
-            background-size: cover;
-            background-position: center;
-            color: #ffffff;
-            font-family: 'Orbitron', sans-serif;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .container {
-            background-color: rgba(0, 0, 0, 0.85);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            margin: 0 auto;
-            box-shadow: 0 0 25px #00ffff;
-        }
-
-        h1 {
-            font-size: 42px;
-            color: #00ffff;
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
-        }
-
-        p {
-            font-size: 20px;
-            color: #cccccc;
-            margin-top: 20px;
-        }
-
-        a.button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 15px 30px;
-            background-color: #00ffff;
-            color: #111;
-            font-size: 18px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        a.button:hover {
-            background-color: #111;
-            color: #00ffff;
-            border: 2px solid #ff00ff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>CV Upload Successful</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    body {
+      background-color: #111;
+      color: #00ffff;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    .success-box {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ffff;
+      padding: 50px;
+      border-radius: 15px;
+      display: inline-block;
+      box-shadow: 0 0 30px #ff00ff;
+    }
+    .success-box h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .success-box p {
+      font-size: 20px;
+    }
+    .button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: #00ffff;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background: #ff00ff;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CV Upload Successful</h1>
-        <p>Thank you for submitting your CV.<br>
-        Our system has securely stored your document and is now matching it with the best roles in the market.</p>
-        <p>You’ll be notified when high-relevance opportunities are detected.</p>
-        <a href="/dashboard" class="button">Go to Your Dashboard</a>
+  <div class="success-box">
+    <h1>🚀 Success!</h1>
+    <p>Your CV has been uploaded and stored successfully.</p>
+    <p>You're now ready to dive into <strong>CV Doctor</strong> or explore <strong>Live Jobs</strong>.</p>
+    <div>
+      <button class="button" onclick="window.location.href='/cv_dr'">Go to CV Doctor</button>
+      <button class="button" onclick="window.location.href='/live_jobs'">View Live Jobs</button>
     </div>
+  </div>
 </body>
 </html>
