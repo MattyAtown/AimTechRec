@@ -1,99 +1,89 @@
-
-/* AIM TechRec Neon Theme Base */
 body {
-    background: url('/static/background.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #00ffcc;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    color: white;
+    background-color: #121212;
+    background-size: cover;
 }
 
-header {
-    background-color: rgba(0, 0, 0, 0.8);
-    padding: 1rem;
+.banner-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(10, 10, 10, 0.9);
+    padding: 10px 30px;
+    border-bottom: 2px solid #0ff;
+}
+
+.banner-left .logo {
+    height: 50px;
+    cursor: pointer;
+}
+
+.banner-center {
+    flex: 1;
     text-align: center;
-    border-bottom: 2px solid #00ffcc;
 }
 
-header h1 {
-    font-size: 2rem;
-    color: #00ffcc;
-    text-shadow: 0 0 5px #00ffcc;
-}
-
-.banner-quote {
-    background-color: rgba(0, 0, 0, 0.75);
-    padding: 1rem;
-    font-size: 1.5rem;
+.tech-banner-text {
+    font-size: 28px;
     font-weight: bold;
-    text-align: center;
-    color: #ff33cc;
-    text-shadow: 0 0 10px #ff33cc;
+    color: #0ff;
+    margin: 0;
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 2rem;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
 }
 
 .box {
     background-color: rgba(20, 20, 20, 0.9);
-    padding: 1rem;
+    padding: 20px;
     border-radius: 10px;
-    width: 45%;
-    box-shadow: 0 0 10px #00ffcc;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px #0ff;
 }
 
-.box h2 {
-    color: #00ffcc;
-    border-bottom: 1px solid #00ffcc;
-    padding-bottom: 0.5rem;
-}
-
-input, select, button, textarea {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #00ffcc;
-    border: 1px solid #00ffcc;
-    padding: 0.5rem;
-    margin: 0.5rem 0;
+.search-box input,
+.search-box select,
+.search-box textarea,
+.search-box button {
     width: 100%;
+    margin: 10px 0;
+    padding: 10px;
     border-radius: 5px;
+    border: none;
 }
 
-input::placeholder, textarea::placeholder {
-    color: #cccccc;
-}
-
-button {
-    background-color: rgba(0, 255, 204, 0.2);
+.search-box button {
+    background-color: #0ff;
+    color: black;
     font-weight: bold;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: rgba(0, 255, 204, 0.4);
-    color: #000;
+.result-container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
 }
 
-.result-card {
-    background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid #00ffcc;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 0 5px #00ffcc;
+.left-box,
+.right-box {
+    flex: 1;
+    padding: 10px;
+    background-color: rgba(10, 10, 10, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #0ff;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-.result-card strong {
-    color: #ffcc00;
-}
-
-.logo {
-    height: 60px;
-    width: auto;
-    display: block;
-    margin: 0 auto 10px auto;
+.job-box,
+.match-box {
+    border-bottom: 1px solid #0ff;
+    padding: 10px 0;
 }
