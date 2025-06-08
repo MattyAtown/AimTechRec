@@ -41,21 +41,25 @@ def login_signup():
         return redirect(url_for("live_jobs"))  # or some dashboard page
     return render_template("login_signup.html")
 
-@app.route("/login", methods=["POST"])
-def login():
+@app.route("/signup", methods=["POST"])
+def signup():
+    name = request.form.get("name")
     email = request.form.get("email")
     password = request.form.get("password")
 
-    user = User.query.filter_by(email=email, password=password).first()
-
-    if user:
-        session["user"] = user.name
-        flash(f"Welcome back, {user.name}!")
-        return redirect(url_for("live_jobs"))
-    else:
-        flash("Invalid credentials")
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        flash("Email already registered. Please log in.")
         return redirect(url_for("login_signup"))
 
+    new_user = User(name=name, email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    session["user"] = name
+    flash("Account created successfully!")
+    return redirect(url_for("live_jobs"))
+    
 @app.route('/cv_dr')
 def cv_dr():
     return render_template("cv_dr.html")
