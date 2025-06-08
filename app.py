@@ -31,6 +31,21 @@ def login_signup():
         return redirect(url_for("live_jobs"))  # or some dashboard page
     return render_template("login_signup.html")
 
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    user = User.query.filter_by(email=email, password=password).first()
+
+    if user:
+        session["user"] = user.name
+        flash(f"Welcome back, {user.name}!")
+        return redirect(url_for("live_jobs"))
+    else:
+        flash("Invalid credentials")
+        return redirect(url_for("login_signup"))  # Or wherever your login form is
+
 @app.route('/cv_dr')
 def cv_dr():
     return render_template("cv_dr.html")
