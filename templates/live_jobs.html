@@ -1,128 +1,63 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Jobs</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>>
-  <style>
-    body {
-      background-color: #0e0e0e;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .container {
-      width: 90%;
-      margin: auto;
-      padding: 20px;
-    }
-    h1, h2 {
-      color: #00ffcc;
-      text-shadow: 1px 1px 3px #000;
-    }
-    .banner {
-      background-color: #1f1f1f;
-      padding: 10px;
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
-      border: 1px solid #00ffcc;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    input[type="text"], input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      background-color: #222;
-      color: #fff;
-      border: 1px solid #444;
-      border-radius: 5px;
-    }
-    button {
-      margin: 10px 5px 20px 0;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background-color: #00ffcc;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .result-container {
-      display: flex;
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .left-box, .right-box {
-      flex: 1;
-      border: 1px solid #00ffcc;
-      padding: 15px;
-      border-radius: 10px;
-      background-color: #1c1c1c;
-    }
-    .job-box, .match-box {
-      border-bottom: 1px solid #333;
-      padding: 10px 0;
-    }
-    .job-box:last-child, .match-box:last-child {
-      border-bottom: none;
-    }
-    #cvStatus {
-      margin-left: 10px;
-      color: #00ffcc;
-      font-weight: bold;
-    }
-    .logo {
-      float: right;
-      height: 40px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Job Hunter 🎯</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </head>
-<body>
-  <div class="container">
-    <img src="/static/images/logo.png" class="logo" alt="AiM Logo" />
-    <div class="banner">"Job Boards are Boring - AiM hit the mark."</div>
-    <h1>Search for Jobs</h1>
+<body style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-size: cover;">
 
-    <div class="form-group">
-      <label for="jobTitle">Job Title:</label>
-      <input type="text" id="jobTitle" placeholder="e.g. Software Engineer" />
+    <div class="banner-container">
+        <div class="banner-left">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" onclick="window.location.href='/'" />
+        </div>
+        <div class="banner-center">
+            <h1 class="tech-banner-text">Job Hunter 🎯</h1>
+        </div>
     </div>
 
-    <div class="form-group">
-      <label for="jobLocation">Location:</label>
-      <input type="text" id="jobLocation" placeholder="e.g. London" />
+    <div class="container flex-row">
+        <div class="box search-box">
+            <h2>Your Job Selection Criteria</h2>
+            <input type="text" id="jobTitle" placeholder="e.g. Software Developer">
+            <input type="text" id="jobLocation" placeholder="Location or Postcode">
+            <input type="number" id="minSalary" placeholder="Minimum Salary (£)">
+            <input type="number" id="idealSalary" placeholder="Ideal Salary (£)">
+
+            <label>Company Benefits:</label>
+            <select multiple id="benefits">
+                <option>Bonus</option>
+                <option>Private Health</option>
+                <option>Staff Discount</option>
+                <option>Annual Pay Review</option>
+            </select>
+
+            <label>Working Arrangement:</label>
+            <select id="workType">
+                <option value="">Any</option>
+                <option value="Remote">Remote</option>
+                <option value="Office">Office Based</option>
+                <option value="Hybrid">Hybrid</option>
+            </select>
+
+            <textarea id="excludeCompanies" placeholder="Companies to exclude (comma separated)"></textarea>
+            <input type="file" id="cvUpload">
+            <div id="cvStatus"></div>
+            <button id="matchBtn">Match CV to Jobs</button>
+            <button id="searchJobs">View Live Jobs</button>
+        </div>
+
+        <div class="box results-box">
+            <h2>Live Jobs</h2>
+            <div id="allJobs">No jobs loaded yet...</div>
+        </div>
+
+        <div class="box results-box">
+            <h2>Matched For You</h2>
+            <div id="matchedJobs">No matched jobs yet...</div>
+        </div>
     </div>
-
-    <div class="form-group">
-      <label for="cvUpload">Upload CV:</label>
-      <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" />
-      <span id="cvStatus"></span>
-    </div>
-
-    <button id="searchJobs">Search Jobs</button>
-    <button id="matchBtn">Match Jobs</button>
-    <button onclick="window.location.href='/cv_dr'">Enhance Your CV</button>
-
-    <div class="result-container">
-      <div class="left-box">
-        <h2>All Jobs</h2>
-        <div id="allJobs">No jobs loaded yet...</div>
-      </div>
-      <div class="right-box">
-        <h2>Matched For You</h2>
-        <div id="matchedJobs">No matched jobs yet...</div>
-      </div>
-    </div>
-  </div>
-
-  <script src="/static/js/scripts.js"></script>
 </body>
 </html>
