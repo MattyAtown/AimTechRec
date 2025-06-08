@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function () {
   const searchBtn = document.getElementById("searchJobs");
   const matchBtn = document.getElementById("matchBtn");
@@ -77,10 +76,22 @@ document.addEventListener("DOMContentLoaded", function () {
     jobs.forEach((job) => {
       const box = document.createElement("div");
       box.className = "job-box";
+      const salaryMin = job.salary_min ?? null;
+      const salaryMax = job.salary_max ?? null;
+      let salaryDisplay = "Not listed";
+
+      if (salaryMin && salaryMax) {
+        salaryDisplay = `£${salaryMin.toLocaleString()} - £${salaryMax.toLocaleString()}`;
+      } else if (salaryMin) {
+        salaryDisplay = `From £${salaryMin.toLocaleString()}`;
+      } else if (salaryMax) {
+        salaryDisplay = `Up to £${salaryMax.toLocaleString()}`;
+      }
+
       box.innerHTML = `
         <h4>${job.title}</h4>
         <p><strong>Location:</strong> ${job.location}</p>
-        <p><strong>Salary:</strong> £${job.salary || "Not listed"}</p>
+        <p><strong>Salary:</strong> ${salaryDisplay}</p>
         ${isMatch ? `<p><strong>Match:</strong> ${job.match}%</p>` : ""}
       `;
       box.addEventListener("click", () => showPopup(job));
@@ -90,12 +101,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showPopup(job) {
     selectedJob = job;
+
+    const salaryMin = job.salary_min ?? null;
+    const salaryMax = job.salary_max ?? null;
+    let salaryDisplay = "Not listed";
+
+    if (salaryMin && salaryMax) {
+      salaryDisplay = `£${salaryMin.toLocaleString()} - £${salaryMax.toLocaleString()}`;
+    } else if (salaryMin) {
+      salaryDisplay = `From £${salaryMin.toLocaleString()}`;
+    } else if (salaryMax) {
+      salaryDisplay = `Up to £${salaryMax.toLocaleString()}`;
+    }
+
     popup.innerHTML = `
       <div class="popup-overlay">
         <div class="popup-content">
           <span class="close-btn" onclick="document.getElementById('popup').innerHTML=''">&times;</span>
           <h3>${job.title} – ${job.location}</h3>
-          <p><strong>Salary:</strong> £${job.salary || "Not listed"}</p>
+          <p><strong>Salary:</strong> ${salaryDisplay}</p>
           <p>${job.description || "No description provided."}</p>
           <label><input type="checkbox" id="confirmShortlist"> Shortlist me for this role</label><br><br>
           <button onclick="submitShortlist()">Submit</button>
