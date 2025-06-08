@@ -79,7 +79,12 @@ def signup():
     
 @app.route('/cv_dr')
 def cv_dr():
-    return render_template("cv_dr.html")
+    if "user" not in session:
+        flash("Please log in first.")
+        return redirect(url_for("login_signup"))
+
+    user = User.query.filter_by(name=session["user"]).first()
+    return render_template("cv_dr.html", user=user)
 
 @app.route('/dashboard')
 def dashboard():
@@ -98,13 +103,20 @@ def cv_storage_success():
 
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
-    global cv_text_store
     file = request.files['cv']
-    if file:
+    if file and "user" in session:
         text = extract_text_from_pdf(file)
-        cv_text_store = text
-        return jsonify({"text": text})
-    return jsonify({"error": "No file uploaded"}), 400
+
+        # Get the current user from session
+        user = User.query.filter_by(name=session["user"]).first()
+        if user:
+            user.cv_text = text
+            db.session.commit()
+            flash("📄 Your CV has been uploaded and saved.")
+            return redirect(url_for('cv_storage_success'))  # Or dashboard
+
+    flash("⚠️ Something went wrong. Try again.")
+    return redirect(url_for('cv_dr'))
 
 @app.route('/api/jobs')
 def search_jobs():
