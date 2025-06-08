@@ -87,16 +87,16 @@ def cv_dr():
     user = User.query.filter_by(name=session["user"]).first()
 
     if request.method == "POST":
-        uploaded_file = request.files.get("cv_file")
-        if not uploaded_file:
-            return render_template("cv_dr.html", user=user, feedback="❌ No file uploaded.")
+    uploaded_file = request.files.get("cv_file")
+    if not uploaded_file:
+        return render_template("cv_dr.html", user=user, feedback="❌ No file uploaded.")
 
-        # Extract text from PDF or DOCX
-        if uploaded_file.filename.endswith(".pdf"):
-    reader = PdfReader(uploaded_file)
-    text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
-else:
-    return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF.")
+    if uploaded_file.filename.endswith(".pdf"):
+        reader = PdfReader(uploaded_file)
+        text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+    else:
+        return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF.")
+
 
         # Get feedback from OpenAI
         response = openai.ChatCompletion.create(
