@@ -5,13 +5,15 @@ import os
 import fitz  # PyMuPDF
 import openai
 from PyPDF2 import PdfReader
-import docx
-
-app = Flask(__name__)                    
-app.secret_key = "e8c3b90a9d5c407c9e12311cfec4cdbc"
 from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.secret_key = "e8c3b90a9d5c407c9e12311cfec4cdbc"
+CORS(app)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aimtechrec.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False  # Optional but recommende
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
 
 class User(db.Model):
@@ -19,12 +21,12 @@ class User(db.Model):
     name = db.Column(db.String(150))
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    cv_text = db.Column(db.Text)  
+    cv_text = db.Column(db.Text)
 
-# Environment variables
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+openai.api_key = OPENAI_API_KEY
 
 @app.route('/')
 def home():
@@ -38,60 +40,45 @@ def live_jobs():
 def login():
     email = request.form.get("email")
     password = request.form.get("password")
-
     user = User.query.filter_by(email=email, password=password).first()
-
     if user:
         session["user"] = user.name
         flash(f"👋 Welcome back, {user.name}!")
-        return redirect(url_for("dashboard"))  # or live_jobs
+        return redirect(url_for("dashboard"))
     else:
         flash("❌ Invalid credentials, try again.")
         return redirect(url_for("login_signup"))
 
-# Route to display the signup form
 @app.route("/login_signup", methods=["GET"])
 def login_signup():
     return render_template("login_signup.html")
 
-# Route to handle form submission
 @app.route("/signup", methods=["POST"])
 def signup():
     name = request.form.get("name")
     email = request.form.get("email")
     password = request.form.get("password")
-    # handle signup (e.g., save user, send email)
-
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
         flash("Email already registered. Please log in.")
         return redirect(url_for("login_signup"))
-
     new_user = User(name=name, email=email, password=password)
     db.session.add(new_user)
     db.session.commit()
-
     session["user"] = name
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
-
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/cv_dr", methods=["GET", "POST"])
 def cv_dr():
     if "user" not in session:
         flash("Please log in first.")
         return redirect(url_for("login_signup"))
-
     user = User.query.filter_by(name=session["user"]).first()
-
     if request.method == "POST":
         uploaded_file = request.files.get("cv_file")
         if not uploaded_file:
             return render_template("cv_dr.html", user=user, feedback="❌ No file uploaded.")
-
-        # Extract text from PDF only (for now)
         if uploaded_file.filename.endswith(".pdf"):
             try:
                 reader = PdfReader(uploaded_file)
@@ -100,12 +87,8 @@ def cv_dr():
                 return render_template("cv_dr.html", user=user, feedback=f"❌ Failed to read PDF: {str(e)}")
         else:
             return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF.")
-
-        # Save text to user profile
         user.cv_text = text
         db.session.commit()
-
-        # Get feedback from OpenAI
         try:
             response = openai.ChatCompletion.create(
                 model="gpt-4",
@@ -117,23 +100,7 @@ def cv_dr():
             feedback = response.choices[0].message.content
         except Exception as e:
             feedback = f"⚠️ Error generating feedback: {str(e)}"
-
         return render_template("cv_dr.html", user=user, feedback=feedback, original=text)
-
-    return render_template("cv_dr.html", user=user)
-
-        # Get feedback from OpenAI
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a career expert reviewing CVs."},
-                {"role": "user", "content": f"Can you review this CV and give a short summary of its strengths and weaknesses:\n\n{text}"}
-            ]
-        )
-        feedback = response.choices[0].message.content
-
-        return render_template("cv_dr.html", user=user, feedback=feedback, original=text)
-
     return render_template("cv_dr.html", user=user)
 
 @app.route('/dashboard')
@@ -141,10 +108,7 @@ def dashboard():
     if "user" not in session:
         flash("Please log in first.")
         return redirect(url_for("login_signup"))
-
-    # Get user from database
     user = User.query.filter_by(name=session["user"]).first()
-
     return render_template("dashboard.html", user=user)
 
 @app.route('/cv_storage_success')
@@ -156,15 +120,12 @@ def upload_cv():
     file = request.files['cv']
     if file and "user" in session:
         text = extract_text_from_pdf(file)
-
-        # Get the current user from session
         user = User.query.filter_by(name=session["user"]).first()
         if user:
             user.cv_text = text
             db.session.commit()
             flash("📄 Your CV has been uploaded and saved.")
-            return redirect(url_for('cv_storage_success'))  # Or dashboard
-
+            return redirect(url_for('cv_storage_success'))
     flash("⚠️ Something went wrong. Try again.")
     return redirect(url_for('cv_dr'))
 
@@ -172,7 +133,6 @@ def upload_cv():
 def search_jobs():
     title = request.args.get('title', '')
     location = request.args.get('location', 'london')
-
     url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what={title}&where={location}&content-type=application/json"
     res = requests.get(url)
     if res.status_code == 200:
@@ -189,17 +149,14 @@ def search_jobs():
 
 @app.route('/api/match_cv_jobs', methods=['POST'])
 def match_jobs():
-    global cv_text_store
     user_cv = request.json.get("cv_text", '')
     if not user_cv:
         return jsonify([])
-
     dummy_jobs = [
         {"title": "Software Engineer", "location": "London", "description": "We are looking for a Python developer with Flask experience."},
         {"title": "Data Analyst", "location": "Manchester", "description": "Strong skills in SQL and data visualization."},
         {"title": "DevOps Engineer", "location": "Remote", "description": "Experience with CI/CD pipelines and AWS required."}
     ]
-
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     matches = []
     for job in dummy_jobs:
@@ -242,6 +199,7 @@ def extract_reasons(text):
     lines = text.split("\n")
     reasons = [line.strip("- ") for line in lines if "match" in line.lower() or "because" in line.lower()]
     return reasons[:3] if reasons else ["See description"]
+
 @app.route('/services')
 def services():
     return render_template("services.html")
@@ -260,8 +218,6 @@ def logout():
     flash("👋 You've been logged out.")
     return redirect(url_for('login_signup'))
 
-from flask import render_template
-
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -273,11 +229,11 @@ def shortlist():
     location = data.get("location")
     company = data.get("company")
     print(f"Shortlist Request: {title} at {company} in {location}")
-    # (Later) Add email logic here to send CV to jobs@aimtechrec.com
     return jsonify({"message": "Shortlist request received."})
 
 with app.app_context():
     db.create_all()
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
