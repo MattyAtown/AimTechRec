@@ -17,6 +17,7 @@ class User(db.Model):
     name = db.Column(db.String(150))
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
+    cv_text = db.Column(db.Text)  
 
 # Environment variables
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
