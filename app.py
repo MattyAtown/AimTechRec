@@ -46,6 +46,13 @@ def login():
     else:
         flash("Invalid credentials")
         return redirect(url_for("login_signup"))  # Or wherever your login form is
+    if user:
+        session["user"] = user.name
+        flash(f"Welcome back, {user.name}!")
+        return redirect(url_for("live_jobs"))
+    else:
+        flash("Invalid credentials")
+        return redirect(url_for("login_signup"))  # Or wherever your login form is
 
 @app.route('/cv_dr')
 def cv_dr():
