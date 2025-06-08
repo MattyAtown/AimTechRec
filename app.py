@@ -103,6 +103,22 @@ def cv_dr():
         return render_template("cv_dr.html", user=user, feedback=feedback, original=text)
     return render_template("cv_dr.html", user=user, original="")
 
+@app.route("/revamp_cv", methods=["POST"])
+def revamp_cv():
+    original_text = request.form.get("cv_text", "")
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a professional CV writer."},
+                {"role": "user", "content": f"Please improve this CV:\n\n{original_text}"}
+            ]
+        )
+        revised = response.choices[0].message.content
+    except Exception as e:
+        revised = f"⚠️ Error improving CV: {str(e)}"
+    return render_template("cv_dr.html", revised=revised, original=original_text, user=User.query.filter_by(name=session["user"]).first())
+
 @app.route('/dashboard')
 def dashboard():
     if "user" not in session:
