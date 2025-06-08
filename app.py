@@ -77,40 +77,9 @@ class User(db.Model):
     name = db.Column(db.String(100), unique=True, nullable=False)
     cv_text = db.Column(db.Text, nullable=True)
 
-@app.route("/cv_dr", methods=["GET", "POST"])
+@app.route('/cv_dr')
 def cv_dr():
-    user = User.query.filter_by(name=session.get("user", "default_user")).first()
-    if not user:
-        user = User(name=session.get("user", "default_user"))
-        db.session.add(user)
-        db.session.commit()
-
-    if request.method == "POST":
-        uploaded_file = request.files.get("cv_file")
-        if uploaded_file:
-            filename = secure_filename(uploaded_file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            uploaded_file.save(filepath)
-
-            text = ""
-            if filename.endswith(".pdf"):
-                reader = PdfReader(filepath)
-                for page in reader.pages:
-                    text += page.extract_text() or ""
-            elif filename.endswith(".txt"):
-                with open(filepath, "r", encoding="utf-8") as f:
-                    text = f.read()
-
-            user.cv_text = text
-            db.session.commit()
-            
-                feedback = response.choices[0].message.content
-            except Exception as e:
-                feedback = f"⚠️ Error analyzing CV: {str(e)}"
-
-            return render_template("cv_dr.html", feedback=feedback, original=text, user=user)
-
-    return render_template("cv_dr.html", user=user)
+    return render_template("cv_dr.html")
 
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
