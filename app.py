@@ -103,15 +103,7 @@ def cv_dr():
 
             user.cv_text = text
             db.session.commit()
-
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4",
-                    messages=[0],
-                        {"role": "system", "content": "You are a professional CV reviewer."},
-                   {"role": "user", "content": f"Please review this CV and provide feedback:\n\n{text}"})
             
-
                 feedback = response.choices[0].message.content
             except Exception as e:
                 feedback = f"⚠️ Error analyzing CV: {str(e)}"
