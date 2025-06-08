@@ -34,12 +34,20 @@ def home():
 def live_jobs():
     return render_template("live_jobs.html")
 
-@app.route("/login_signup", methods=["GET", "POST"])
-def login_signup():
-    if request.method == "POST":
-        # Your logic for handling form submission
-        return redirect(url_for("live_jobs"))  # or some dashboard page
-    return render_template("login_signup.html")
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    user = User.query.filter_by(email=email, password=password).first()
+
+    if user:
+        session["user"] = user.name
+        flash(f"👋 Welcome back, {user.name}!")
+        return redirect(url_for("dashboard"))  # or live_jobs
+    else:
+        flash("❌ Invalid credentials, try again.")
+        return redirect(url_for("login_signup"))
 
 @app.route("/signup", methods=["POST"])
 def signup():
@@ -57,8 +65,9 @@ def signup():
     db.session.commit()
 
     session["user"] = name
-    flash("Account created successfully!")
-    return redirect(url_for("live_jobs"))
+    flash(f"🎉 Welcome to AiM, {name}!")
+    return redirect(url_for("dashboard"))
+
     
 @app.route('/cv_dr')
 def cv_dr():
