@@ -6,7 +6,16 @@ import fitz  # PyMuPDF
 import openai
 
 app = Flask(__name__)                    
-app.secret_key = "e8c3b90a9d5c407c9e12311cfec4cdbc"  
+app.secret_key = "e8c3b90a9d5c407c9e12311cfec4cdbc"
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    email = db.Column(db.String(150), unique=True)
+    password = db.Column(db.String(150))
 
 # Environment variables
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
@@ -44,14 +53,7 @@ def login():
         return redirect(url_for("live_jobs"))
     else:
         flash("Invalid credentials")
-        return redirect(url_for("login_signup"))  # Or wherever your login form is
-    if user:
-        session["user"] = user.name
-        flash(f"Welcome back, {user.name}!")
-        return redirect(url_for("live_jobs"))
-    else:
-        flash("Invalid credentials")
-        return redirect(url_for("login_signup"))  # Or wherever your login form is
+        return redirect(url_for("login_signup"))
 
 @app.route('/cv_dr')
 def cv_dr():
@@ -182,6 +184,8 @@ def shortlist():
     # (Later) Add email logic here to send CV to jobs@aimtechrec.com
     return jsonify({"message": "Shortlist request received."})
 
+with app.app_context():
+    db.create_all()
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
