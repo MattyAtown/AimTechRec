@@ -131,13 +131,68 @@
   </style>
 </head>
 <body>
-
   <header>
     <div class="header-container">
       <a href="{{ url_for('home') }}"><img src="/static/images/logo.png" alt="AiM Logo" class="logo"></a>
       <div class="title">CV Doctor - AiM Tech Recruitment</div>
     </div>
   </header>
+
+  <div id="quote-banner">
+    “You get one shot, to make a good first impression – make it count.”
+  </div>
+
+  <!-- CV Status Message -->
+  <section style="text-align: center; margin-top: 20px;">
+    {% if user.cv_text %}
+      <p style="color: #00ff00; font-weight: bold;">✅ CV uploaded and ready for analysis.</p>
+    {% else %}
+      <p style="color: #ff4444; font-weight: bold;">❌ No CV uploaded yet. Please upload one below.</p>
+    {% endif %}
+  </section>
+
+  <!-- Main Upload + Feedback Section -->
+  <div class="cv-container">
+    <h1>🩺 CV Doctor</h1>
+    <p>Drag your CV into the box or click to upload</p>
+
+    <form action="/cv_dr" method="POST" enctype="multipart/form-data">
+      <label class="drop-label" for="cv_file">Drop or click here</label>
+      <input type="file" id="cv_file" name="cv_file" onchange="this.form.submit()" />
+    </form>
+
+    {% if feedback %}
+      <h2>🧠 Review Summary</h2>
+      <pre>{{ feedback }}</pre>
+      <div class="button-group">
+        <form method="POST" action="/revamp_cv">
+          <input type="hidden" name="cv_text" value="{{ original|tojson }}">
+          <button type="submit">Improve My CV</button>
+        </form>
+      </div>
+    {% elif revised %}
+      <h2>✨ Revamped CV</h2>
+      <pre>{{ revised }}</pre>
+      <div class="button-group">
+        <form method="POST" action="/revamp_cv">
+          <input type="hidden" name="cv_text" value="{{ original|tojson }}">
+          <button type="submit">Try Again</button>
+        </form>
+      </div>
+    {% endif %}
+
+    <div class="options">
+      <h3>Would you like to match your CV to current live jobs we carefully selected for you?</h3>
+      <button onclick="alert('Matching jobs...')">Yes, Match My CV</button>
+
+      <div style="margin-top: 20px;">
+        <label><input type="checkbox"> Opt in to job alerts</label>
+        <label><input type="checkbox"> Track my interview progress</label>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
 
   <div id="quote-banner">
     “You get one shot, to make a good first impression – make it count.”
