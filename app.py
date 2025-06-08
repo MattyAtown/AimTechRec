@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+app.secret_key = "your_secret_key"
 from flask_cors import CORS
 import requests
 import os
