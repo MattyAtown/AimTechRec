@@ -93,13 +93,10 @@ def cv_dr():
 
         # Extract text from PDF or DOCX
         if uploaded_file.filename.endswith(".pdf"):
-            reader = PdfReader(uploaded_file)
-            text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
-        elif uploaded_file.filename.endswith(".docx"):
-            doc = docx.Document(uploaded_file)
-            text = "\n".join([p.text for p in doc.paragraphs])
-        else:
-            return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF or DOCX.")
+    reader = PdfReader(uploaded_file)
+    text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+else:
+    return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF.")
 
         # Get feedback from OpenAI
         response = openai.ChatCompletion.create(
