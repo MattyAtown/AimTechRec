@@ -1,9 +1,11 @@
+from docx import Document
+import openai
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_cors import CORS
 import requests
 import os
+from werkzeug.utils import secure_filename
 import fitz  # PyMuPDF
-import openai
 from PyPDF2 import PdfReader
 from flask_sqlalchemy import SQLAlchemy
 
@@ -69,39 +71,55 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    cv_text = db.Column(db.Text, nullable=True)
+
 @app.route("/cv_dr", methods=["GET", "POST"])
 def cv_dr():
-    if "user" not in session:
-        flash("Please log in first.")
-        return redirect(url_for("login_signup"))
-    user = User.query.filter_by(name=session["user"]).first()
+    user = User.query.filter_by(name=session.get("user", "default_user")).first()
+    if not user:
+        user = User(name=session.get("user", "default_user"))
+        db.session.add(user)
+        db.session.commit()
+
     if request.method == "POST":
         uploaded_file = request.files.get("cv_file")
-        if not uploaded_file:
-            return render_template("cv_dr.html", user=user, feedback="❌ No file uploaded.")
-        if uploaded_file.filename.endswith(".pdf"):
+        if uploaded_file:
+            filename = secure_filename(uploaded_file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(filepath)
+
+            text = ""
+            if filename.endswith(".pdf"):
+                reader = PdfReader(filepath)
+                for page in reader.pages:
+                    text += page.extract_text() or ""
+            elif filename.endswith(".txt"):
+                with open(filepath, "r", encoding="utf-8") as f:
+                    text = f.read()
+
+            user.cv_text = text
+            db.session.commit()
+
             try:
-                reader = PdfReader(uploaded_file)
-                text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+                response = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a professional CV reviewer."},
+                        {"role": "user", "content": f"Please review this CV and provide feedback:
+\n\n{text}"}
+                    ]
+                )
+                feedback = response.choices[0].message.content
             except Exception as e:
-                return render_template("cv_dr.html", user=user, feedback=f"❌ Failed to read PDF: {str(e)}")
-        else:
-            return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF.")
-        user.cv_text = text
-        db.session.commit()
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a career expert reviewing CVs."},
-                    {"role": "user", "content": f"Can you review this CV and give a short summary of its strengths and weaknesses:\n\n{text}"}
-                ]
-            )
-            feedback = response.choices[0].message.content
-        except Exception as e:
-            feedback = f"⚠️ Error generating feedback: {str(e)}"
-        return render_template("cv_dr.html", user=user, feedback=feedback, original=text)
-    return render_template("cv_dr.html", user=user, original="")
+                feedback = f"⚠️ Error analyzing CV: {str(e)}"
+
+            return render_template("cv_dr.html", feedback=feedback, original=text, user=user)
+
+    return render_template("cv_dr.html", user=user)
 
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
@@ -117,7 +135,15 @@ def revamp_cv():
         revised = response.choices[0].message.content
     except Exception as e:
         revised = f"⚠️ Error improving CV: {str(e)}"
-    return render_template("cv_dr.html", revised=revised, original=original_text, user=User.query.filter_by(name=session["user"]).first())
+
+    user = User.query.filter_by(name=session.get("user", "default_user")).first()
+    return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
+
+if __name__ == "__main__":
+    if not os.path.exists("uploads"):
+        os.makedirs("uploads")
+    app.run(debug=True)
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -130,6 +156,8 @@ def dashboard():
 @app.route('/cv_storage_success')
 def cv_storage_success():
     return render_template("cv_storage_success.html")
+
+
 
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
