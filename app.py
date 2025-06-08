@@ -24,8 +24,11 @@ def home():
 def live_jobs():
     return render_template("live_jobs.html")
 
-@app.route('/login_signup')
+@app.route("/login_signup", methods=["GET", "POST"])
 def login_signup():
+    if request.method == "POST":
+        # Your logic for handling form submission
+        return redirect(url_for("live_jobs"))  # or some dashboard page
     return render_template("login_signup.html")
 
 @app.route('/cv_dr')
