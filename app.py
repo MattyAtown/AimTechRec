@@ -10,7 +10,6 @@ app.secret_key = "e8c3b90a9d5c407c9e12311cfec4cdbc"
 from flask_sqlalchemy import SQLAlchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aimtechrec.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False  # Optional but recommende
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aimtechrec.db
 db = SQLAlchemy(app)
 
 class User(db.Model):
