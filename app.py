@@ -66,7 +66,14 @@ def cv_dr():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template("dashboard.html")
+    if "user" not in session:
+        flash("Please log in first.")
+        return redirect(url_for("login_signup"))
+
+    # Get user from database
+    user = User.query.filter_by(name=session["user"]).first()
+
+    return render_template("dashboard.html", user=user)
 
 @app.route('/cv_storage_success')
 def cv_storage_success():
