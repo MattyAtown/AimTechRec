@@ -17,6 +17,19 @@
             overflow-x: hidden;
         }
 
+        .flash-banner {
+            background-color: #00ffff;
+            color: #111;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ff00ff;
+            margin: 20px auto;
+            width: 80%;
+            text-align: center;
+            font-size: 18px;
+        }
+
         .header-container {
             display: flex;
             align-items: center;
@@ -33,7 +46,6 @@
             font-family: 'Rajdhani', sans-serif;
             font-size: 42px;
             color: #00ffff;
-            text-transform: none;
             font-weight: 700;
             letter-spacing: 2px;
             text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
@@ -118,6 +130,16 @@
             <div class="title">User Dashboard</div>
         </div>
     </header>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-banner">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <div class="dashboard-container">
         <h1 class="dashboard-header">Welcome Back, {{ user.name }}!</h1>
