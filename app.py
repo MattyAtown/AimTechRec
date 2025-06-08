@@ -49,11 +49,18 @@ def login():
         flash("❌ Invalid credentials, try again.")
         return redirect(url_for("login_signup"))
 
+# Route to display the signup form
+@app.route("/login_signup", methods=["GET"])
+def login_signup():
+    return render_template("login_signup.html")
+
+# Route to handle form submission
 @app.route("/signup", methods=["POST"])
 def signup():
     name = request.form.get("name")
     email = request.form.get("email")
     password = request.form.get("password")
+    # handle signup (e.g., save user, send email)
 
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
