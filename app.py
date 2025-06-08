@@ -4,8 +4,7 @@ import requests
 import os
 import fitz  # PyMuPDF
 import openai
-from PyPDF2 
-import PdfReader
+from PyPDF2 import PdfReader
 import docx
 
 app = Flask(__name__)                    
