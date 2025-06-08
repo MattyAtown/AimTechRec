@@ -4,6 +4,9 @@ import requests
 import os
 import fitz  # PyMuPDF
 import openai
+from PyPDF2 
+import PdfReader
+import docx
 
 app = Flask(__name__)                    
 app.secret_key = "e8c3b90a9d5c407c9e12311cfec4cdbc"
@@ -23,9 +26,6 @@ class User(db.Model):
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-# In-memory CV text (temporary storage)
-cv_text_store = ""
 
 @app.route('/')
 def home():
@@ -76,14 +76,44 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
-    
-@app.route('/cv_dr')
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.route("/cv_dr", methods=["GET", "POST"])
 def cv_dr():
     if "user" not in session:
         flash("Please log in first.")
         return redirect(url_for("login_signup"))
 
     user = User.query.filter_by(name=session["user"]).first()
+
+    if request.method == "POST":
+        uploaded_file = request.files.get("cv_file")
+        if not uploaded_file:
+            return render_template("cv_dr.html", user=user, feedback="❌ No file uploaded.")
+
+        # Extract text from PDF or DOCX
+        if uploaded_file.filename.endswith(".pdf"):
+            reader = PdfReader(uploaded_file)
+            text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+        elif uploaded_file.filename.endswith(".docx"):
+            doc = docx.Document(uploaded_file)
+            text = "\n".join([p.text for p in doc.paragraphs])
+        else:
+            return render_template("cv_dr.html", user=user, feedback="❌ Unsupported file format. Please upload a PDF or DOCX.")
+
+        # Get feedback from OpenAI
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a career expert reviewing CVs."},
+                {"role": "user", "content": f"Can you review this CV and give a short summary of its strengths and weaknesses:\n\n{text}"}
+            ]
+        )
+        feedback = response.choices[0].message.content
+
+        return render_template("cv_dr.html", user=user, feedback=feedback, original=text)
+
     return render_template("cv_dr.html", user=user)
 
 @app.route('/dashboard')
@@ -206,7 +236,8 @@ def values():
 
 @app.route('/logout')
 def logout():
-    # Add your logout logic later if needed
+    session.pop("user", None)
+    flash("👋 You've been logged out.")
     return redirect(url_for('login_signup'))
 
 from flask import render_template
