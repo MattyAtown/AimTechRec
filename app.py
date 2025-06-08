@@ -101,7 +101,7 @@ def cv_dr():
         except Exception as e:
             feedback = f"⚠️ Error generating feedback: {str(e)}"
         return render_template("cv_dr.html", user=user, feedback=feedback, original=text)
-    return render_template("cv_dr.html", user=user)
+    return render_template("cv_dr.html", user=user, original="")
 
 @app.route('/dashboard')
 def dashboard():
