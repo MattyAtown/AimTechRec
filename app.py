@@ -1,5 +1,6 @@
+
 from docx import Document
-import openai
+from openai import OpenAI
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_cors import CORS
 import requests
@@ -15,6 +16,7 @@ CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aimtechrec.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["UPLOAD_FOLDER"] = "uploads" 
 
 db = SQLAlchemy(app)
 
@@ -28,7 +30,7 @@ class User(db.Model):
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.route('/')
 def home():
@@ -71,25 +73,17 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    cv_text = db.Column(db.Text, nullable=True)
-
-@app.route('/cv_dr')
-def cv_dr():
-    return render_template("cv_dr.html")
-
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
     original_text = request.form.get("cv_text", "")
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV writer."},
-                {"role": "user", "content": f"Please improve this CV:\n\n{original_text}"}
+                {"role": "user", "content": f"Please improve this CV:
+
+{original_text}"}
             ]
         )
         revised = response.choices[0].message.content
@@ -98,12 +92,6 @@ def revamp_cv():
 
     user = User.query.filter_by(name=session.get("user", "default_user")).first()
     return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
-
-if __name__ == "__main__":
-    if not os.path.exists("uploads"):
-        os.makedirs("uploads")
-    app.run(debug=True)
-
 
 @app.route('/dashboard')
 def dashboard():
@@ -117,8 +105,6 @@ def dashboard():
 def cv_storage_success():
     return render_template("cv_storage_success.html")
 
-
-
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
     file = request.files['cv']
@@ -128,10 +114,8 @@ def upload_cv():
         if user:
             user.cv_text = text
             db.session.commit()
-            flash("📄 Your CV has been uploaded and saved.")
-            return redirect(url_for('cv_storage_success'))
-    flash("⚠️ Something went wrong. Try again.")
-    return redirect(url_for('cv_dr'))
+            return jsonify({"text": text})
+    return jsonify({"error": "Upload failed"})
 
 @app.route('/api/jobs')
 def search_jobs():
@@ -164,7 +148,13 @@ def match_jobs():
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     matches = []
     for job in dummy_jobs:
-        prompt = f"Compare this CV:\n{user_cv[:2000]}\n\nWith this job description:\n{job['description']}\n\nHow strong is the match from 0-100? Give reasons."
+        prompt = f"Compare this CV:
+{user_cv[:2000]}
+
+With this job description:
+{job['description']}
+
+How strong is the match from 0-100? Give reasons."
         response = requests.post("https://api.openai.com/v1/chat/completions",
                                  headers=headers,
                                  json={
@@ -188,7 +178,8 @@ def match_jobs():
 
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
-    text = "\n".join(page.get_text() for page in doc)
+    text = "
+".join(page.get_text() for page in doc)
     return text
 
 def extract_score_from_response(text):
@@ -200,7 +191,8 @@ def extract_score_from_response(text):
     return 0
 
 def extract_reasons(text):
-    lines = text.split("\n")
+    lines = text.split("
+")
     reasons = [line.strip("- ") for line in lines if "match" in line.lower() or "because" in line.lower()]
     return reasons[:3] if reasons else ["See description"]
 
@@ -235,9 +227,10 @@ def shortlist():
     print(f"Shortlist Request: {title} at {company} in {location}")
     return jsonify({"message": "Shortlist request received."})
 
-with app.app_context():
-    db.create_all()
-
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
+    with app.app_context():
+        db.create_all()
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+    if not os.path.exists("uploads"):
+        os.makedirs("uploads")
