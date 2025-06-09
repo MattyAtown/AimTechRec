@@ -1,5 +1,5 @@
 from docx import Document
-from openai import OpenAI
+import openai
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_cors import CORS
 import requests
@@ -15,7 +15,6 @@ CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aimtechrec.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["UPLOAD_FOLDER"] = "uploads" 
 
 db = SQLAlchemy(app)
 
@@ -29,7 +28,7 @@ class User(db.Model):
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY
 
 @app.route('/')
 def home():
@@ -72,11 +71,21 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    cv_text = db.Column(db.Text, nullable=True)
+
+@app.route('/cv_dr')
+def cv_dr():
+    return render_template("cv_dr.html")
+
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
     original_text = request.form.get("cv_text", "")
     try:
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV writer."},
@@ -90,6 +99,11 @@ def revamp_cv():
     user = User.query.filter_by(name=session.get("user", "default_user")).first()
     return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
 
+if __name__ == "__main__":
+    if not os.path.exists("uploads"):
+        os.makedirs("uploads")
+    app.run(debug=True)
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -102,6 +116,7 @@ def dashboard():
 @app.route('/cv_storage_success')
 def cv_storage_success():
     return render_template("cv_storage_success.html")
+
 
 
 @app.route('/upload_cv', methods=['POST'])
@@ -141,17 +156,15 @@ def match_jobs():
     user_cv = request.json.get("cv_text", '')
     if not user_cv:
         return jsonify([])
-
     dummy_jobs = [
-        {"title": "Software Engineer", "location": "London", "description": "Python, Flask, APIs"},
-        {"title": "Data Analyst", "location": "Manchester", "description": "SQL, data viz, Excel"},
-        {"title": "DevOps Engineer", "location": "Remote", "description": "CI/CD, AWS, Docker"}
+        {"title": "Software Engineer", "location": "London", "description": "We are looking for a Python developer with Flask experience."},
+        {"title": "Data Analyst", "location": "Manchester", "description": "Strong skills in SQL and data visualization."},
+        {"title": "DevOps Engineer", "location": "Remote", "description": "Experience with CI/CD pipelines and AWS required."}
     ]
-
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     matches = []
     for job in dummy_jobs:
-        prompt = f"Compare this CV:\n{user_cv[:2000]}\n\nWith this job description:\n{job['description']}\nHow strong is the match from 0–100? Provide reasons."
+        prompt = f"Compare this CV:\n{user_cv[:2000]}\n\nWith this job description:\n{job['description']}\n\nHow strong is the match from 0-100? Give reasons."
         response = requests.post("https://api.openai.com/v1/chat/completions",
                                  headers=headers,
                                  json={
@@ -222,11 +235,9 @@ def shortlist():
     print(f"Shortlist Request: {title} at {company} in {location}")
     return jsonify({"message": "Shortlist request received."})
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
-    if not os.path.exists("uploads"):
-        os.makedirs("uploads")
+with app.app_context():
+    db.create_all()
 
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
