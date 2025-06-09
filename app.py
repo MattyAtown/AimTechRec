@@ -73,6 +73,11 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
+@app.route('/cv_dr', methods=["GET"])
+def cv_dr():
+    user = User.query.filter_by(name=session.get("user", "default_user")).first()
+    return render_template("cv_dr.html", user=user)
+
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
     original_text = request.form.get("cv_text", "")
