@@ -118,7 +118,6 @@ def cv_storage_success():
     return render_template("cv_storage_success.html")
 
 
-
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
     file = request.files['cv']
