@@ -72,11 +72,28 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
-@app.route('/cv_dr')
+@app.route('/cv_dr', methods=["GET", "POST"])
 def cv_dr():
-    user = None
-    if "user" in session:
-        user = User.query.filter_by(name=session["user"]).first()
+    if request.method == "POST":
+        # CV submission or processing logic
+        original_text = request.form.get("cv_text", "")
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a professional CV writer."},
+                    {"role": "user", "content": f"Please improve this CV:\n\n{original_text}"}
+                ]
+            )
+            revised = response.choices[0].message.content
+        except Exception as e:
+            revised = f"⚠️ Error improving CV: {str(e)}"
+
+        user = User.query.filter_by(name=session.get("user", "default_user")).first()
+        return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
+
+    # For GET request
+    user = User.query.filter_by(name=session.get("user", "default_user")).first()
     return render_template("cv_dr.html", user=user)
 
 
