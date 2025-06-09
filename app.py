@@ -141,15 +141,17 @@ def match_jobs():
     user_cv = request.json.get("cv_text", '')
     if not user_cv:
         return jsonify([])
+
     dummy_jobs = [
-        {"title": "Software Engineer", "location": "London", "description": "We are looking for a Python developer with Flask experience."},
-        {"title": "Data Analyst", "location": "Manchester", "description": "Strong skills in SQL and data visualization."},
-        {"title": "DevOps Engineer", "location": "Remote", "description": "Experience with CI/CD pipelines and AWS required."}
+        {"title": "Software Engineer", "location": "London", "description": "Python, Flask, APIs"},
+        {"title": "Data Analyst", "location": "Manchester", "description": "SQL, data viz, Excel"},
+        {"title": "DevOps Engineer", "location": "Remote", "description": "CI/CD, AWS, Docker"}
     ]
+
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     matches = []
     for job in dummy_jobs:
-        prompt = f"Compare this CV:\n{user_cv[:2000]}\n\nWith this job description:\n{job['description']}\n\nHow strong is the match from 0-100? Give reasons."
+        prompt = f"Compare this CV:\n{user_cv[:2000]}\n\nWith this job description:\n{job['description']}\nHow strong is the match from 0–100? Provide reasons."
         response = requests.post("https://api.openai.com/v1/chat/completions",
                                  headers=headers,
                                  json={
