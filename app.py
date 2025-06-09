@@ -72,10 +72,6 @@ def signup():
     return redirect(url_for("dashboard"))
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    cv_text = db.Column(db.Text, nullable=True)
 
 @app.route('/cv_dr')
 def cv_dr():
@@ -99,10 +95,14 @@ def revamp_cv():
     user = User.query.filter_by(name=session.get("user", "default_user")).first()
     return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
     if not os.path.exists("uploads"):
         os.makedirs("uploads")
-    app.run(debug=True)
 
 
 @app.route('/dashboard')
@@ -238,6 +238,4 @@ def shortlist():
 with app.app_context():
     db.create_all()
 
-if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
