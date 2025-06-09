@@ -75,7 +75,8 @@ def signup():
 
 @app.route('/cv_dr')
 def cv_dr():
-    return render_template("cv_dr.html")
+    user = User.query.filter_by(name=session.get("user", "")).first()
+    return render_template("cv_dr.html", user=user)
 
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
