@@ -1,4 +1,3 @@
-
 from docx import Document
 from openai import OpenAI
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
