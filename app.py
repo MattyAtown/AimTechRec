@@ -72,6 +72,13 @@ def signup():
     flash(f"🎉 Welcome to AiM, {name}!")
     return redirect(url_for("dashboard"))
 
+@app.route('/cv_dr')
+def cv_dr():
+    user = None
+    if "user" in session:
+        user = User.query.filter_by(name=session["user"]).first()
+    return render_template("cv_dr.html", user=user)
+
 
 @app.route("/revamp_cv", methods=["POST"])
 def revamp_cv():
