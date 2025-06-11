@@ -91,11 +91,22 @@ def revamp_cv():
 
 {original_text}"""
 }
-            ]
-        )
-        revised = response.choices[0].message.content
-    except Exception as e:
-        revised = f"⚠️ Error improving CV: {str(e)}"
+try:
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a professional CV writer."},
+            {
+                "role": "user",
+                "content": f"""Please improve this CV:
+
+{original_text}"""
+            }
+        ]
+    )
+    revised = response.choices[0].message.content
+except Exception as e:
+    revised = f"⚠️ Error improving CV: {str(e)}"
 
     user = User.query.filter_by(name=session.get("user", "default_user")).first()
     return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
