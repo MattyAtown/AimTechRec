@@ -82,14 +82,17 @@ def revamp_cv():
     original_text = request.form.get("cv_text", "")
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a professional CV writer."},
-                {"role": "user", "content": f"Please improve this CV:
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "You are a professional CV writer."},
+        {
+            "role": "user",
+            "content": f"""Please improve this CV:
 
-{original_text}"}
-            ]
-        )
+{original_text}"""
+        }
+    ]
+)
         revised = response.choices[0].message.content
     except Exception as e:
         revised = f"⚠️ Error improving CV: {str(e)}"
