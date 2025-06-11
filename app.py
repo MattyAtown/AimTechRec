@@ -1,3 +1,4 @@
+
 from docx import Document
 from openai import OpenAI
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
@@ -6,7 +7,6 @@ import requests
 import os
 from werkzeug.utils import secure_filename
 import fitz  # PyMuPDF
-from PyPDF2 import PdfReader
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///aimtechrec.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["UPLOAD_FOLDER"] = "uploads" 
+app.config["UPLOAD_FOLDER"] = "uploads"
 
 db = SQLAlchemy(app)
 
@@ -85,29 +85,14 @@ def revamp_cv():
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV writer."},
-               {
-    "role": "user",
-    "content": f"""Please improve this CV:
+                {"role": "user", "content": f"Please improve this CV:
 
-{original_text}"""
-}
-try:
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a professional CV writer."},
-            {
-                "role": "user",
-                "content": f"""Please improve this CV:
-
-{original_text}"""
-            }
-        ]
-    )
-    revised = response.choices[0].message.content
-except Exception as e:
-    revised = f"⚠️ Error improving CV: {str(e)}"
-
+{original_text}"}
+            ]
+        )
+        revised = response.choices[0].message.content
+    except Exception as e:
+        revised = f"⚠️ Error improving CV: {str(e)}"
     user = User.query.filter_by(name=session.get("user", "default_user")).first()
     return render_template("cv_dr.html", revised=revised, original=original_text, user=user)
 
@@ -135,84 +120,9 @@ def upload_cv():
             return jsonify({"text": text})
     return jsonify({"error": "Upload failed"})
 
-@app.route('/api/jobs')
-def search_jobs():
-    title = request.args.get('title', '')
-    location = request.args.get('location', 'london')
-    url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what={title}&where={location}&content-type=application/json"
-    res = requests.get(url)
-    if res.status_code == 200:
-        jobs = res.json().get('results', [])
-        job_list = [{
-            "title": job.get("title"),
-            "company": job.get("company", {}).get("display_name"),
-            "location": job.get("location", {}).get("display_name"),
-            "salary_min": job.get("salary_min"),
-            "description": job.get("description")
-        } for job in jobs]
-        return jsonify(job_list)
-    return jsonify([])
-
-@app.route('/api/match_cv_jobs', methods=['POST'])
-def match_jobs():
-    user_cv = request.json.get("cv_text", '')
-    if not user_cv:
-        return jsonify([])
-    dummy_jobs = [
-        {"title": "Software Engineer", "location": "London", "description": "We are looking for a Python developer with Flask experience."},
-        {"title": "Data Analyst", "location": "Manchester", "description": "Strong skills in SQL and data visualization."},
-        {"title": "DevOps Engineer", "location": "Remote", "description": "Experience with CI/CD pipelines and AWS required."}
-    ]
-    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
-    matches = []
-    for job in dummy_jobs:
-        prompt = f"Compare this CV:
-{user_cv[:2000]}
-
-With this job description:
-{job['description']}
-
-How strong is the match from 0-100? Give reasons."
-        response = requests.post("https://api.openai.com/v1/chat/completions",
-                                 headers=headers,
-                                 json={
-                                     "model": "gpt-4",
-                                     "messages": [
-                                         {"role": "system", "content": "You are a CV-job matching assistant."},
-                                         {"role": "user", "content": prompt}
-                                     ]
-                                 })
-        if response.status_code == 200:
-            content = response.json()['choices'][0]['message']['content']
-            score = extract_score_from_response(content)
-            reasons = extract_reasons(content)
-            matches.append({
-                "title": job['title'],
-                "location": job['location'],
-                "match": score,
-                "reasons": reasons
-            })
-    return jsonify(matches)
-
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
-    text = "
-".join(page.get_text() for page in doc)
-    return text
-
-def extract_score_from_response(text):
-    import re
-    match = re.search(r'(\d{1,3})', text)
-    if match:
-        score = int(match.group(1))
-        return min(score, 100)
-    return 0
-
-def extract_reasons(text):
-    lines = text.split("
-")
-    reasons = [line.strip("- ") for line in lines if "match" in line.lower() or "because" in line.lower()]
-    return reasons[:3] if reasons else ["See description"]
+    return "\n".join(page.get_text() for page in doc)
 
 @app.route('/services')
 def services():
