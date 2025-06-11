@@ -85,7 +85,7 @@ def revamp_cv():
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV writer."},
-                {"role": "user", "content": f"Please improve this CV:
+                {"role": "user", "content": f"Please improve this CV:\n\n{original_text}"}
 
 {original_text}"}
             ]
