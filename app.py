@@ -85,9 +85,12 @@ def revamp_cv():
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional CV writer."},
-                {"role": "user", "content": f"Please improve this CV:\n\n{original_text}"}
+               {
+    "role": "user",
+    "content": f"""Please improve this CV:
 
-{original_text}"}
+{original_text}"""
+}
             ]
         )
         revised = response.choices[0].message.content
