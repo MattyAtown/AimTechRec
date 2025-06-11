@@ -202,7 +202,7 @@ def extract_reasons(text):
 
 @app.route('/services')
 def services():
-    return render_template("services.html")
+    return render_template('services.html')
 
 @app.route('/about')
 def about():
